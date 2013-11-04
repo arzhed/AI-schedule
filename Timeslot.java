@@ -16,6 +16,6 @@ public class Timeslot extends Entity {
 		conflict = ts;
 	}
 	
-
+	
 }
 	
