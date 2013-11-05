@@ -29,4 +29,12 @@ public class TA extends Entity {
 		return taking;
 	}
 	
+	public void setKnows(Course c){
+		knows.add(c);
+	}
+	
+	public Vector<Course> getKnows(){
+		return knows;
+	}
+	
 }

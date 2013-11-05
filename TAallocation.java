@@ -233,10 +233,36 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	public void a_knows(String ta, String c) {
-		println("Unimplemented");
+		OUT : if (!e_knows(ta, c)) {
+			for (int i = 0; i < taList.size(); i++){
+				if (ta.equals(taList.elementAt(i).getName())) {
+					for (int j = 0; j < courseList.size(); j++){
+						if (c.equals(courseList.elementAt(j).getName())) {
+							taList.elementAt(i).setKnows(courseList.elementAt(j));
+							break OUT;
+						}
+					}
+					println("Error : Course not found.");
+				}
+			}
+		}
+		else
+			println("Warning: Materiel knowledge already added.");
 	}
 	public boolean e_knows(String ta, String c) {
-		println("Unimplemented");
+		for (int i = 0; i < taList.size(); i++){
+			if (ta.equals(taList.elementAt(i).getName())) {
+				if (taList.elementAt(i).getKnows()!=null){
+					for (int j = 0; j < taList.elementAt(i).getKnows().size(); j++) {
+						if (c.equals(taList.elementAt(i).getKnows().elementAt(j).getName())){
+							return true;
+						}
+					}
+				}
+				return false;
+			}
+		}
+		println("Error : TA not found.");
 		return false;
 	}
 	
@@ -396,7 +422,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			if (t1.equals(schedule.elementAt(i).getName())){
 				if (schedule.elementAt(i).getConflict()!= null) {
 					for (int j = 0; j < schedule.elementAt(i).getConflict().size(); j++) {
-						if (schedule.elementAt(i).getConflict().elementAt(j)!= null && t2.equals(schedule.elementAt(i).getConflict().elementAt(j).getName())) {
+						if (t2.equals(schedule.elementAt(i).getConflict().elementAt(j).getName())) {
 							return true;
 						}
 					}
