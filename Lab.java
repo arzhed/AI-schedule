@@ -2,6 +2,7 @@ package taAllocation;
 
 public class Lab extends Entity {
 	
+	private TA ta;
 	
 	public Lab(String name) {
 		super(name);
@@ -10,4 +11,5 @@ public class Lab extends Entity {
 	public Lab(Lab lab) {
 		super(lab);
 	}
+	
 }

@@ -37,6 +37,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		else
 			println("Warning: TA already created.");
 	}
+	
 	public boolean e_TA(String p) {
 		TA temp = new TA(p);
 		
@@ -70,11 +71,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	public void a_course(String p) {
-		if (!e_course(p))
+		if (!e_course(p)) {
 			Course c = new Course(p);
 			c.setSenior(false);
 			c.setGrad(false);
 			courseList.add(c);
+		}
 		else
 			println("Warning: Course already created.");
 	}
