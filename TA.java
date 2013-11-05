@@ -4,7 +4,7 @@ import java.util.Vector;
 
 public class TA extends Entity {
 	
-	private Course[] prefers;
+	private Course[] prefers = new Course[3];
 	private Vector<Course> taking;
 	private Vector<Course> knows;
 	private Vector<Timeslot> schedule;

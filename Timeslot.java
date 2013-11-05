@@ -1,8 +1,10 @@
 package taAllocation;
 
+import java.util.Vector;
+
 public class Timeslot extends Entity {
 
-	private Timeslot conflict;
+	private Vector<Timeslot> conflict;
 	
 	public Timeslot(String name) {
 		super(name);
@@ -12,9 +14,13 @@ public class Timeslot extends Entity {
 		super(ts);
 	}
 	
-	public void setConflict(Timeslot ts) {
-		conflict = ts;
+	public void addConflict(Timeslot ts) {
+		conflict.add(ts);
 	}
+
+    public Vector<Timeslot> getConflict() {
+        return conflict;
+    }
 	
 
 }
