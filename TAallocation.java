@@ -165,7 +165,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		        	return true;
 		    }
 		}
-		         return false;
+		return false;
 
 	}
 	
@@ -267,10 +267,45 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	public void a_prefers(String instructor, String ta, String c) {
-		
+		OUT : if (!e_prefers(instructor, ta, c)) {
+			for (int i = 0; i < instructorList.size(); i++) {
+				if (instructor.equals(instructorList.elementAt(i).getName())) {
+					for (int j = 0; j < taList.size(); j++) {
+						if (ta.equals(taList.elementAt(j).getName())) {
+							for (int k = 0; k < courseList.size(); k++) {
+								if (c.equals(courseList.elementAt(k).getName())) {
+									instructorList.elementAt(i).setPrefers(taList.elementAt(j), courseList.elementAt(k));
+									break OUT;
+								}
+							}
+							println("Error : course not found.");
+							break OUT;
+						}
+					}
+					println("Error : TA not found.");
+					break OUT;
+				}
+			}
+		}
+		else
+			println("Warning: instructor preference  already created.");
 	}
 	public boolean e_prefers(String instructor, String ta, String c) {
-		println("Unimplemented");
+		for (int i = 0; i < instructorList.size(); i++) {
+			if (instructor.equals(instructorList.elementAt(i).getName())) {
+				if (instructorList.elementAt(i).getPrefersC()!=null && instructorList.elementAt(i).getPrefersTA()!=null){
+					for (int j = 0; j < instructorList.elementAt(i).getPrefersC().size();j++) {
+						if (c.equals(instructorList.elementAt(i).getPrefersC().elementAt(j).getName())){
+							if (ta.equals(instructorList.elementAt(i).getPrefersTA().elementAt(j).getName())){
+								return true;
+							}
+						}
+					}
+				}
+				return false;
+			}
+		}
+		println("Error : instructor not found.");
 		return false;
 	}
 	
