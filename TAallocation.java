@@ -17,6 +17,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	private Vector<Course> courseList = new Vector<Course>();
 	private Vector<Lecture> lectureList = new Vector<Lecture>();
 	private Vector<Lab> labList = new Vector<Lab>();
+	private Vector<Timeslot> schedule = new Vector<Timeslot>();
 	
 	private Long maxlabs;
 	private Long minlabs;
