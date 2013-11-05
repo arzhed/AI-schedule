@@ -146,11 +146,28 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	public void a_timeslot(String p) {
-		println("Unimplemented");
+		if(!e_timeslot(p)) {
+            Timeslot t = new Timeslot(p);
+            schedule.add(t);
+        }
+        else
+            println("Warning: Timeslot already created.");
 	}
+
 	public boolean e_timeslot(String p) {
-		println("Unimplemented");
-		return false;
+		Timeslot t = new Timeslot(p);
+
+        if(schedule.size() ==0) {
+            return false;
+        }
+        else {
+            for (int i=0; i<schedule.size(); i++) {
+                Timeslot temp = schedule.elementAt(i);
+                if (t.equals(temp))
+                    return true;
+            }
+        }
+        return false;
 	}
 	
 	public void a_lecture(String c, String lec) {
