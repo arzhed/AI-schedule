@@ -76,7 +76,11 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			c.setSenior(false);
 			c.setGrad(false);
 			courseList.add(c);
+<<<<<<< HEAD
 		}
+=======
+        }
+>>>>>>> 81703799b82159df4f1ace23857f7049eb11336c
 		else
 			println("Warning: Course already created.");
 	}
@@ -95,11 +99,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	public void a_senior_course(String p) {
-		if (!e_senior_course(p))
+		if (!e_senior_course(p)) {
 			Course c = new Course(p);
 			c.setSenior(true);
 			c.setGrad(false);
 			courseList.add(c);
+        }
 		else
 			println("Warning: Course already created.");
 	}
@@ -119,11 +124,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	public void a_grad_course(String p) {
-		if (!e_grad_course(p))
+		if (!e_grad_course(p)) {
 			Course c = new Course(p);
 			c.setSenior(false);
 			c.setGrad(true);
 			courseList.add(c);
+        }
 		else
 			println("Warning: Course already created.");
 	}
