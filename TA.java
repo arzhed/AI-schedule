@@ -3,7 +3,9 @@ package taAllocation;
 public class TA extends Entity {
 	
 	private Course[3] prefers;
-	private Vector<Course> taking;
+	private Vector<Lecture> taking;
+	private Vector<Course> knows;
+	private Vector<Timeslot> schedule;
 	
 	public TA(String name) {
 		super(name);
