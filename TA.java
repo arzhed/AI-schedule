@@ -5,9 +5,9 @@ import java.util.Vector;
 public class TA extends Entity {
 	
 	private Course[] prefers = new Course[3];
-	private Vector<Course> taking;
-	private Vector<Course> knows;
-	private Vector<Timeslot> schedule;
+	private Vector<Course> taking = new Vector<Course>();
+	private Vector<Course> knows = new Vector<Course>();
+	private Vector<Timeslot> schedule = new Vector<Timeslot>();
 	
 	public TA(String name) {
 		super(name);

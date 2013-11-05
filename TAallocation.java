@@ -165,7 +165,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		        	return true;
 		    }
 		}
-			return false;
+		         return false;
 
 	}
 	
@@ -360,7 +360,10 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	public void a_taking(String ta, String c, String l) {
-		println("Unimplemented");
+		if (!e_taking( ta, c, l)) {
+			println("Unimplemented");
+		}else
+			println("Warning: this TA is already taking this course and this lab/lecture.");
 	}
 	public boolean e_taking(String ta, String c, String l) {
 		println("Unimplemented");
@@ -369,13 +372,39 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	
 	public void a_conflicts(String t1, String t2) {
 		if (!e_conflicts(t1, t2)) {
-			println("Unimplemented");
+			int I=-1;
+			int J=-1;
+			for (int i = 0; i < schedule.size(); i++) {
+				if (t1.equals(schedule.elementAt(i).getName())){
+					I=i;
+				}else if (t2.equals(schedule.elementAt(i).getName())){
+					J=i;
+				}
+			}
+			if (I==-1 || J==-1)
+				println("Error: Timeslot not found.");
+			else {
+				schedule.elementAt(I).addConflict(schedule.elementAt(J));
+				schedule.elementAt(J).addConflict(schedule.elementAt(I));
+			}
 		}
 		else
 			println("Warning: timeslot conflict already created.");
 	}
 	public boolean e_conflicts(String t1, String t2) {
-		println("Unimplemented");
+		for (int i = 0; i < schedule.size(); i++) {
+			if (t1.equals(schedule.elementAt(i).getName())){
+				if (schedule.elementAt(i).getConflict()!= null) {
+					for (int j = 0; j < schedule.elementAt(i).getConflict().size(); j++) {
+						if (schedule.elementAt(i).getConflict().elementAt(j)!= null && t2.equals(schedule.elementAt(i).getConflict().elementAt(j).getName())) {
+							return true;
+						}
+					}
+				}
+				return false;
+			}
+		}
+		println("Error: Timeslot not found.");
 		return false;
 	}
 	

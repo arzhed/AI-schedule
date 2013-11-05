@@ -4,7 +4,7 @@ import java.util.Vector;
 
 public class Timeslot extends Entity {
 
-	private Vector<Timeslot> conflict;
+	private Vector<Timeslot> conflict = new Vector<Timeslot>();
 	
 	public Timeslot(String name) {
 		super(name);
