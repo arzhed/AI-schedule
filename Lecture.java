@@ -19,11 +19,23 @@ public class Lecture extends Entity {
         return labList;
     }
 
+    public void addLab(Lab lab) {
+        labList.add(lab);
+    }
+
     public Timeslot getTime () {
         return time;
     }
 
+    public void setTime(Timeslot t) {
+        time=t;
+    }
+
     public Course getCourse() {
         return course;
+    }
+
+    public void setCourse (Course c) {
+        course=c;
     }
 }
