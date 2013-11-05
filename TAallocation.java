@@ -147,27 +147,26 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	
 	public void a_timeslot(String p) {
 		if(!e_timeslot(p)) {
-            Timeslot t = new Timeslot(p);
-            schedule.add(t);
-        }
-        else
-            println("Warning: Timeslot already created.");
-	}
+			Timeslot t = new Timeslot(p);
+			schedule.add(t);
+		}else
+			println("Warning: Timeslot already created.");
 
+	}
 	public boolean e_timeslot(String p) {
 		Timeslot t = new Timeslot(p);
+		
+		if(schedule.size() ==0) {
+			return false;
+		}else {
+		    for (int i=0; i<schedule.size(); i++) {
+		    	Timeslot temp = schedule.elementAt(i);
+		        if (t.equals(temp))
+		        	return true;
+		    }
+		}
+			return false;
 
-        if(schedule.size() ==0) {
-            return false;
-        }
-        else {
-            for (int i=0; i<schedule.size(); i++) {
-                Timeslot temp = schedule.elementAt(i);
-                if (t.equals(temp))
-                    return true;
-            }
-        }
-        return false;
 	}
 	
 	public void a_lecture(String c, String lec) {
@@ -250,26 +249,113 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	public void a_prefers1(String ta, String c) {
-		println("Unimplemented");
+		if (!e_prefers1(ta, c)) {
+			int I=-1;
+			int J=-1;
+			for (int i = 0; i < taList.size(); i++) {
+				if (ta.equals(taList.elementAt(i).getName())) {
+					I=i;
+				}
+			}
+			for (int i = 0; i < courseList.size(); i++) {
+				if (c.equals(courseList.elementAt(i).getName())){
+					J=i;
+				}
+			}
+			if (I==-1 )
+				println("Error : TA not found.");
+			else if (J==-1)
+				println("Error : Course not found.");
+			else
+				taList.elementAt(I).setPrefer(courseList.elementAt(J), 1);
+		}
+		else
+			println("Warning: Preference 1 already created.");
 	}
 	public boolean e_prefers1(String ta, String c) {
-		println("Unimplemented");
+		for (int i = 0; i < taList.size(); i++) {
+			if (ta.equals(taList.elementAt(i).getName())) {
+				if (taList.elementAt(i).getPrefer(1)!=null && c.equals( taList.elementAt(i).getPrefer(1).getName()))
+					return true;
+				else
+					return false;
+			}
+		}
+		println("Error : TA not found.");
 		return false;
 	}
 	
 	public void a_prefers2(String ta, String c) {
-		println("Unimplemented");
+		if (!e_prefers2(ta, c)) {
+			int I=-1;
+			int J=-1;
+			for (int i = 0; i < taList.size(); i++) {
+				if (ta.equals(taList.elementAt(i).getName())) {
+					I=i;
+				}
+			}
+			for (int i = 0; i < courseList.size(); i++) {
+				if (c.equals(courseList.elementAt(i).getName())){
+					J=i;
+				}
+			}
+			if (I==-1 )
+				println("Error : TA not found.");
+			else if (J==-1)
+				println("Error : Course not found.");
+			else
+				taList.elementAt(I).setPrefer(courseList.elementAt(J), 2);
+		}
+		else
+			println("Warning: Preference 2 already created.");
 	}
 	public boolean e_prefers2(String ta, String c) {
-		println("Unimplemented");
+		for (int i = 0; i < taList.size(); i++) {
+			if (ta.equals(taList.elementAt(i).getName())) {
+				if (taList.elementAt(i).getPrefer(1)!=null && c.equals( taList.elementAt(i).getPrefer(2).getName()))
+					return true;
+				else
+					return false;
+			}
+		}
+		println("Error : TA not found.");
 		return false;
 	}
 	
 	public void a_prefers3(String ta, String c) {
-		println("Unimplemented");
+		if (!e_prefers3(ta, c)) {
+			int I=-1;
+			int J=-1;
+			for (int i = 0; i < taList.size(); i++) {
+				if (ta.equals(taList.elementAt(i).getName())) {
+					I=i;
+				}
+			}
+			for (int i = 0; i < courseList.size(); i++) {
+				if (c.equals(courseList.elementAt(i).getName())){
+					J=i;
+				}
+			}
+			if (I==-1 )
+				println("Error : TA not found.");
+			else if (J==-1)
+				println("Error : Course not found.");
+			else
+				taList.elementAt(I).setPrefer(courseList.elementAt(J), 3);
+		}
+		else
+			println("Warning: Preference 3 already created.");
 	}
 	public boolean e_prefers3(String ta, String c) {
-		println("Unimplemented");
+		for (int i = 0; i < taList.size(); i++) {
+			if (ta.equals(taList.elementAt(i).getName())) {
+				if (taList.elementAt(i).getPrefer(1)!=null && c.equals( taList.elementAt(i).getPrefer(3).getName()))
+					return true;
+				else
+					return false;
+			}
+		}
+		println("Error : TA not found.");
 		return false;
 	}
 	
@@ -282,7 +368,11 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	public void a_conflicts(String t1, String t2) {
-		println("Unimplemented");
+		if (!e_conflicts(t1, t2)) {
+			println("Unimplemented");
+		}
+		else
+			println("Warning: timeslot conflict already created.");
 	}
 	public boolean e_conflicts(String t1, String t2) {
 		println("Unimplemented");
