@@ -445,7 +445,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	public boolean e_prefers2(String ta, String c) {
 		for (int i = 0; i < taList.size(); i++) {
 			if (ta.equals(taList.elementAt(i).getName())) {
-				if (taList.elementAt(i).getPrefer(1)!=null && c.equals( taList.elementAt(i).getPrefer(2).getName()))
+				if (taList.elementAt(i).getPrefer(2)!=null && c.equals( taList.elementAt(i).getPrefer(2).getName()))
 					return true;
 				else
 					return false;
@@ -482,7 +482,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	public boolean e_prefers3(String ta, String c) {
 		for (int i = 0; i < taList.size(); i++) {
 			if (ta.equals(taList.elementAt(i).getName())) {
-				if (taList.elementAt(i).getPrefer(1)!=null && c.equals( taList.elementAt(i).getPrefer(3).getName()))
+				if (taList.elementAt(i).getPrefer(3)!=null && c.equals( taList.elementAt(i).getPrefer(3).getName()))
 					return true;
 				else
 					return false;
