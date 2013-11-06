@@ -15,8 +15,6 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	private Vector<TA> taList = new Vector<TA>();
 	private Vector<Instructor> instructorList = new Vector<Instructor>();
 	private Vector<Course> courseList = new Vector<Course>();
-	private Vector<Lecture> lectureList = new Vector<Lecture>();
-	private Vector<Lab> labList = new Vector<Lab>();
 	private Vector<Timeslot> schedule = new Vector<Timeslot>();
 	
 	private Long maxlabs;
@@ -187,7 +185,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		Course tmpCourse = new Course(c);
 		Lecture tmpLec = new Lecture(lec);
 		
-		if (courseList.size() == 0)
+		if (!e_course(c))
 			return false;
 		
 		for (int i = 0; i < courseList.size(); i++) {
@@ -195,7 +193,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				Vector<Lecture> tmpList = courseList.elementAt(i).getLectures();
 				
 				if (tmpList.size() == 0)
-					continue;
+					continue;                        //why continue? if the course is found once, it cannot be found twice, can it?
 				else { 
 					for (int j = 0; j < tmpList.size(); j++) {
 						if (tmpLec.equals(tmpList.elementAt(j))) {
@@ -209,10 +207,53 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	public void a_lab(String c, String lec, String lab) {
-		println("Unimplemented");
+        if (!e_course(c))
+            a_course(c);
+
+		if(!e_lecture(c,lec))
+            a_lecture(c,lec);
+
+        if(!e_lab(c,lec,lab)) {
+            Course tmpCourse = new Course(c);
+            Lecture tmpLecture = new Lecture(lec);
+            for (int i=0; i<courseList.size();i++) {
+                if(tmpCourse.equals(courseList.elementAt(i))){
+                    Vector<Lecture> lectureList = courseList.elementAt(i).getLectures();
+                    for (int j=0; j<lectureList.size(); j++){
+                        if (tmpLecture.equals(lectureList.elementAt(j))) {
+                            lectureList.elementAt(j).addLab(new Lab(lab));
+                        }
+                    }
+                }
+            }
+        }
+        else println("Warning : lab already created");
 	}
+
 	public boolean e_lab(String c, String lec, String lab) {
-		println("Unimplemented");
+		if(!e_course(c) || !e_lecture(c,lec))
+            return false;
+
+        Course tmpCourse = new Course(c);
+        Lecture tmpLecture = new Lecture(lec);
+        Lab tmpLab = new Lab(lab);
+
+        for(int i=0; i<courseList.size();i++){
+            if (tmpCourse.equals(courseList.elementAt(i))) {
+                Vector<Lecture> lectureList = courseList.elementAt(i).getLectures();
+                for (int j=0;j<lectureList.size();j++) {
+                    if (tmpLecture.equals(lectureList.elementAt(j))) {
+                        Vector<Lab> labList = lectureList.elementAt(j).getLabList();
+                        if (labList.size()==0)
+                            return false;
+                        for (int k=0;k<labList.size();k++){
+                            if (tmpLab.equals(labList.elementAt(k)))
+                                return true;
+                        }
+                    }
+                }
+            }
+        }
 		return false;
 	}
 	
