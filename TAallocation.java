@@ -259,15 +259,18 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	
 	public void a_instructs(String p, String c, String l) {
 		if (!e_instructor(p))
-            a_instructor(p);
+            println("Error : instructor not found");
 
         if(!e_lecture(c,l))
-            a_lecture(c,l);
+            println("Error: lecture not found");
 
         if (!e_instructs(p,c,l)){
             Instructor tmpInstructor = new Instructor(p);
-            Vector<Pair<Course,Lecture>> tmpTeachList = new Vector<Pair<Course, Lecture>>();
-            tmpTeachList.add(new Pair<Course, Lecture>(new Course(c),new Lecture(l)));
+            for (int i=0;i<instructorList.size();i++) {
+                if (tmpInstructor.equals(instructorList.elementAt(i))){
+                    instructorList.elementAt(i).getInstructList().add(new Pair<Course, Lecture>(new Course(c), new Lecture(l)));
+                }
+            }
         }
         else println("Warning : lecture already assigned to instructor" );
 	}
@@ -275,15 +278,18 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		if (!e_instructor(p) || !e_lecture(c,l))
             return false;
 
-        Vector<Pair<Course,Lecture>> instructList = new Instructor(p).getInstructList();
-        if (instructList.size()==0)
-            return false;
+        Pair<Course,Lecture> tmpPair = new Pair<Course, Lecture>(new Course(c),new Lecture(l));
 
-        Pair<Course,Lecture> nPair = new Pair<Course, Lecture>(new Course(c),new Lecture(l));
-
-        for (int i=0; i<instructList.size();i++) {
-            if (instructList.elementAt(i).equals(nPair))
-                return true;
+        for(int j=0;j<instructorList.size();j++){
+            if (instructorList.elementAt(j).getName().equals(p)){
+                Vector<Pair<Course,Lecture>> instructList = instructorList.elementAt(j).getInstructList();
+                for (int i=0; i<instructList.size();i++) {
+                    println(tmpPair.getKey().getName());
+                    if (instructList.elementAt(i).getKey().getName().equals(tmpPair.getKey().getName())
+                            && instructList.elementAt(i).getValue().getName().equals(tmpPair.getValue().getName()))
+                        return true;
+                }
+            }
         }
 
 
