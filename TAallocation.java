@@ -294,10 +294,71 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	public void a_at(String c, String l, String t) {
-		println("Unimplemented");
+		OUT : if (!e_at(c, l, t)) {
+			for (int i = 0; i < courseList.size(); i++){
+				if (c.equals(courseList.elementAt(i).getName())) {
+					if (courseList.elementAt(i).getLectures()!=null){
+						for (int j = 0; j < courseList.elementAt(i).getLectures().size(); j++){
+							if (l.equals(courseList.elementAt(i).getLectures().elementAt(j).getName())) {
+								for (int K = 0; K < schedule.size(); K++){
+									if (t.equals(schedule.elementAt(K).getName())) {
+										courseList.elementAt(i).getLectures().elementAt(j).setTime(schedule.elementAt(K));
+										break OUT;
+									}
+								}
+							}
+							if (courseList.elementAt(i).getLectures().elementAt(j).getLabList()!=null){
+								for (int k = 0; k < courseList.elementAt(i).getLectures().elementAt(j).getLabList().size(); k++){
+									if (l.equals(courseList.elementAt(i).getLectures().elementAt(j).getLabList().elementAt(k).getName())) {
+										for (int K = 0; K < schedule.size(); K++){
+											if (t.equals(schedule.elementAt(K).getName())) {
+												courseList.elementAt(i).getLectures().elementAt(j).getLabList().elementAt(k).setTime(schedule.elementAt(K));
+												break OUT;
+											}
+										}
+									}
+								}
+							}
+						}
+						println("Error : Lab/Lecture or timeslot not found.");
+						break OUT;
+					}
+				}
+			}
+		}
+		else {
+			println("Warning: this course and this lab/lecture at this timeslot is already added.");
+		}
 	}
 	public boolean e_at(String c, String l, String t) {
-		println("Unimplemented");
+		for (int i = 0; i < courseList.size(); i++){
+			if (c.equals(courseList.elementAt(i).getName())) {
+				if (courseList.elementAt(i).getLectures()!=null){
+					for (int j = 0; j < courseList.elementAt(i).getLectures().size(); j++){
+						if (l.equals(courseList.elementAt(i).getLectures().elementAt(j).getName())) {
+							if (courseList.elementAt(i).getLectures().elementAt(j).getTime()!=null) {
+								if (t.equals(courseList.elementAt(i).getLectures().elementAt(j).getTime().getName())){
+									return true;
+								}
+							}
+						}
+						if (courseList.elementAt(i).getLectures().elementAt(j).getLabList()!=null){
+							for (int k = 0; k < courseList.elementAt(i).getLectures().elementAt(j).getLabList().size(); k++){
+								if (l.equals(courseList.elementAt(i).getLectures().elementAt(j).getLabList().elementAt(k).getName())) {
+									if (courseList.elementAt(i).getLectures().elementAt(j).getLabList().elementAt(k).getTime()!=null) {
+										if (t.equals(courseList.elementAt(i).getLectures().elementAt(j).getLabList().elementAt(k).getTime().getName())){
+											return true;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				return false;
+			}
+		}
+		println("Error : Course not found.");
 		return false;
 	}
 	
