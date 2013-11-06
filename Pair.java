@@ -101,4 +101,10 @@ public class Pair<K, V> implements Map.Entry<K,V>, Comparable {
 		} else 
 			return x.toString().compareTo(y.toString());
    }
+
+    public boolean equals(Pair pair) {
+        return  this.getKey().equals(pair.getKey()) && this.getValue().equals(pair.getValue());
+
+    }
+
 }
