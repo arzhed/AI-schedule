@@ -132,7 +132,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	public boolean e_grad_course(String p) {
 		Course c = new Course(p);
 		
-		if (courseList.size() == 0)
+		if (!e_course(p))
 			return false;
 		
 		for (int i = 0; i < courseList.size(); i++) {
@@ -208,10 +208,10 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	
 	public void a_lab(String c, String lec, String lab) {
         if (!e_course(c))
-            a_course(c);
+            println("Error : course doesnt exist");
 
 		if(!e_lecture(c, lec))
-            a_lecture(c,lec);
+            println("Error : lecture doesnt exist");
 
         if(!e_lab(c,lec,lab)) {
             Course tmpCourse = new Course(c);
@@ -274,6 +274,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
         }
         else println("Warning : lecture already assigned to instructor" );
 	}
+
 	public boolean e_instructs(String p, String c, String l) {
 		if (!e_instructor(p) || !e_lecture(c,l))
             return false;
@@ -284,15 +285,11 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
             if (instructorList.elementAt(j).getName().equals(p)){
                 Vector<Pair<Course,Lecture>> instructList = instructorList.elementAt(j).getInstructList();
                 for (int i=0; i<instructList.size();i++) {
-                    println(tmpPair.getKey().getName());
-                    if (instructList.elementAt(i).getKey().getName().equals(tmpPair.getKey().getName())
-                            && instructList.elementAt(i).getValue().getName().equals(tmpPair.getValue().getName()))
+                    if (instructList.elementAt(i).equals(tmpPair) && instructList.elementAt(i).equals(tmpPair))
                         return true;
                 }
             }
         }
-
-
 		return false;
 	}
 	
