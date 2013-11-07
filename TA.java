@@ -19,6 +19,7 @@ public class TA extends Entity {
 	
 	public void setPrefer(Course c, int preference) {
 		prefers[preference - 1] = c;
+		setKnows(c);
 	}
 	
 	public Course getPrefer(int preference) {
@@ -37,6 +38,7 @@ public class TA extends Entity {
 		knows.add(c);
 	}
 	
+	// remember all TAs know junior courses! (list is in TAallocation)
 	public Vector<Course> getKnows(){
 		return knows;
 	}

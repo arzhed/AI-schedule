@@ -23,13 +23,14 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	 */
 	static final int	DEFAULT_MAX_TIME	=30000;
 	
-	private Vector<TA> taList = new Vector<TA>();
-	private Vector<Instructor> instructorList = new Vector<Instructor>();
-	private Vector<Course> courseList = new Vector<Course>();
-	private Vector<Timeslot> schedule = new Vector<Timeslot>();
+	private static Vector<TA> taList = new Vector<TA>();
+	private static Vector<Instructor> instructorList = new Vector<Instructor>();
+	private static Vector<Course> courseList = new Vector<Course>();
+	private static Vector<Course> juniorCourses = new Vector<Course>();
+	private static Vector<Timeslot> schedule = new Vector<Timeslot>();
 	
-	private Long maxlabs;
-	private Long minlabs;
+	private static Long maxlabs;
+	private static Long minlabs;
 	
 	
 	public void a_maxlabs(Long p) {
@@ -86,19 +87,18 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			c.setSenior(false);
 			c.setGrad(false);
 			courseList.add(c);
+			juniorCourses.add(c);
 		}
 		else
 			println("Warning: Course already created.");
 	}
 	
 	public boolean e_course(String p) {
-		Course temp = new Course(p);
-		
 		if (courseList.size() == 0)
 			return false;
 		
 		for (int i = 0; i < courseList.size(); i++) {
-			if (temp.equals(courseList.elementAt(i)))
+			if (p.equals(courseList.elementAt(i).getName()))
 				return true;
 		}
 		return false;
@@ -110,6 +110,8 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			c.setSenior(true);
 			c.setGrad(false);
 			courseList.add(c);
+			if (juniorCourses.contains(c))
+				juniorCourses.remove(c);
         }
 		else
 			println("Warning: Course already created.");
@@ -135,6 +137,8 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			c.setSenior(false);
 			c.setGrad(true);
 			courseList.add(c);
+			if (juniorCourses.contains(c))
+				juniorCourses.remove(c);
         }
 		else
 			println("Warning: Course already created.");
@@ -179,6 +183,11 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	public void a_lecture(String c, String lec) {
+		if (!e_course(c)) {
+			println("Error: Course does not exist.");
+			return;
+		}
+		
 		if (!e_lecture(c, lec)) {
 			Course tmpCourse = new Course(c);
 			for (int i = 0; i < courseList.size(); i++) {
@@ -193,21 +202,20 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	// looks through course list, if course exists, check to see if it has the lecture
 	// if lecture exists, return true, else continue looping, return false if not found after loop
 	public boolean e_lecture(String c, String lec) {
-		Course tmpCourse = new Course(c);
-		Lecture tmpLec = new Lecture(lec);
-		
-		if (!e_course(c))
+		if (!e_course(c)) {
+			println("Error: Course does not exist.");
 			return false;
+		}
 		
 		for (int i = 0; i < courseList.size(); i++) {
-			if (tmpCourse.equals(courseList.elementAt(i))) {
+			if (c.equals(courseList.elementAt(i).getName())) {
 				Vector<Lecture> tmpList = courseList.elementAt(i).getLectures();
 				
 				if (tmpList.size() == 0)
-					continue;                        //why continue? if the course is found once, it cannot be found twice, can it?
+					return false;
 				else { 
 					for (int j = 0; j < tmpList.size(); j++) {
-						if (tmpLec.equals(tmpList.elementAt(j))) {
+						if (lec.equals(tmpList.elementAt(j).getName())) {
 							return true;
 						}
 					}
@@ -218,20 +226,22 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	public void a_lab(String c, String lec, String lab) {
-        if (!e_course(c))
-            println("Error : course doesnt exist");
+		if (!e_course(c)) {
+            println("Error: Course does not exist.");
+            return;
+		}
 
-		if(!e_lecture(c, lec))
-            println("Error : lecture doesnt exist");
-
+		if(!e_lecture(c, lec)) {
+            println("Error: Lecture does not exist.");
+            return;
+		}
+		
         if(!e_lab(c,lec,lab)) {
-            Course tmpCourse = new Course(c);
-            Lecture tmpLecture = new Lecture(lec);
-            for (int i=0; i<courseList.size();i++) {
-                if(tmpCourse.equals(courseList.elementAt(i))){
+            for (int i=0; i< courseList.size();i++) {
+                if(c.equals(courseList.elementAt(i).getName())){
                     Vector<Lecture> lectureList = courseList.elementAt(i).getLectures();
                     for (int j=0; j<lectureList.size(); j++){
-                        if (tmpLecture.equals(lectureList.elementAt(j))) {
+                        if (lec.equals(lectureList.elementAt(j).getName())) {
                             lectureList.elementAt(j).addLab(new Lab(lab));
                         }
                     }
@@ -242,8 +252,15 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 
 	public boolean e_lab(String c, String lec, String lab) {
-		if(!e_lecture(c,lec))
+		if (!e_course(c)) {
+            println("Error: Course does not exist.");
             return false;
+		}
+
+		if(!e_lecture(c, lec)) {
+            println("Error: Lecture does not exist.");
+            return false;
+		}
 
         Course tmpCourse = new Course(c);
         Lecture tmpLecture = new Lecture(lec);
@@ -269,16 +286,24 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	public void a_instructs(String p, String c, String l) {
-		if (!e_instructor(p))
-            println("Error : instructor not found");
-
-        if(!e_lecture(c,l))
-            println("Error: lecture not found");
+		if (!e_instructor(p)) {
+			println("Error: Instructor does not exist.");
+			return;
+		}
+		
+		if (!e_course(c)) {
+			println("Error: Course does not exist.");
+			return;
+		}
+			
+        if(!e_lecture(c,l)) {
+            println("Error: Lecture does not exist.");
+            return;
+        }
 
         if (!e_instructs(p,c,l)){
-            Instructor tmpInstructor = new Instructor(p);
             for (int i=0;i<instructorList.size();i++) {
-                if (tmpInstructor.equals(instructorList.elementAt(i))){
+                if (p.equals(instructorList.elementAt(i).getName())){
                     instructorList.elementAt(i).getInstructList().add(new Pair<Course, Lecture>(new Course(c), new Lecture(l)));
                 }
             }
@@ -287,8 +312,21 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 
 	public boolean e_instructs(String p, String c, String l) {
-		if (!e_instructor(p) || !e_lecture(c,l))
+		if (!e_instructor(p)) {
+			println("Error: Instructor does not exist.");
+			return false;
+		}
+		
+		if (!e_course(c)) {
+			println("Error: Course does not exist.");
+			return false;
+		}
+			
+        if(!e_lecture(c,l)) {
+            println("Error: Lecture does not exist.");
             return false;
+        }
+
 
         Pair<Course,Lecture> tmpPair = new Pair<Course, Lecture>(new Course(c),new Lecture(l));
 
@@ -313,6 +351,10 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 							if (l.equals(courseList.elementAt(i).getLectures().elementAt(j).getName())) {
 								for (int K = 0; K < schedule.size(); K++){
 									if (t.equals(schedule.elementAt(K).getName())) {
+										if (courseList.elementAt(i).getLectures().elementAt(j).getTime() != null) {
+											println("Error: Lecture already has a timeslot.");
+											return;
+										}
 										courseList.elementAt(i).getLectures().elementAt(j).setTime(schedule.elementAt(K));
 										break OUT;
 									}
@@ -323,6 +365,10 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 									if (l.equals(courseList.elementAt(i).getLectures().elementAt(j).getLabList().elementAt(k).getName())) {
 										for (int K = 0; K < schedule.size(); K++){
 											if (t.equals(schedule.elementAt(K).getName())) {
+												if (courseList.elementAt(i).getLectures().elementAt(j).getLabList().elementAt(k).getTime() != null) {
+													println("Error: Lab already has a timeslot.");
+													return;
+												}
 												courseList.elementAt(i).getLectures().elementAt(j).getLabList().elementAt(k).setTime(schedule.elementAt(K));
 												break OUT;
 											}
@@ -369,7 +415,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				return false;
 			}
 		}
-		println("Error : Course not found.");
+		println("Error: Course, lecture/lab, or timeslot not found.");
 		return false;
 	}
 	
@@ -387,8 +433,6 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				}
 			}
 		}
-		else
-			println("Warning: Materiel knowledge already added.");
 	}
 	public boolean e_knows(String ta, String c) {
 		for (int i = 0; i < taList.size(); i++){
@@ -562,6 +606,21 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	public void a_taking(String ta, String c, String l) {
+		if (!e_TA(ta)) {
+			println("Error: TA does not exist.");
+			return;
+		}
+		
+		if (!e_course(c)) {
+			println("Error: Course does not exist.");
+			return;
+		}
+			
+        if(!e_lecture(c,l)) {
+            println("Error: Lecture does not exist.");
+            return;
+        }
+		
 		if (!e_taking(ta, c, l)) {
 			for (int i = 0; i < taList.size(); i++) {
 				if (ta.equals(taList.elementAt(i).getName())) {
@@ -576,10 +635,24 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 					}
 				}
 			}
-		} else
-			println("Warning: this TA is already taking this course and this lab/lecture.");
+		}
 	}
 	public boolean e_taking(String ta, String c, String l) {
+		if (!e_TA(ta)) {
+			println("Error: TA does not exist.");
+			return false;
+		}
+		
+		if (!e_course(c)) {
+			println("Error: Course does not exist.");
+			return false;
+		}
+			
+        if(!e_lecture(c,l)) {
+            println("Error: Lecture does not exist.");
+            return false;
+        }
+		
 		for (int i = 0; i < taList.size(); i++) {
 			if (ta.equals(taList.elementAt(i).getName())) {
 				for (int j = 0; j < taList.elementAt(i).getTaking().size(); j++) {
@@ -614,8 +687,6 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				schedule.elementAt(J).addConflict(schedule.elementAt(I));
 			}
 		}
-		else
-			println("Warning: timeslot conflict already created.");
 	}
 	public boolean e_conflicts(String t1, String t2) {
 		if (t1 == t2)
@@ -658,6 +729,8 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		    
 		    PredicateReader env = new TAallocation();
 			getInput(args[0],runtime, env);
+			String outfilename = makeOutfilename(args[0]);
+			output(outfilename, env);
 		}
 	    else { // go into "command mode" if there's nothing on the command line
 	    	PredicateReader env = new TAallocation();
@@ -703,7 +776,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	/**
-	 * Implment "command mode": repeatedly read lines of predictes
+	 * Implement "command mode": repeatedly read lines of predictes
 	 * from {@link System#in} and either assert them (if the line starts
 	 * with a "!") or evaluate them (and return "true" or "false" to
 	 * {@link System#out}. 
@@ -738,29 +811,39 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		}
 	}
 	
-	public void output(String fileName) {
-		PrintWriter out = new PrintWriter(fileName);
-		
-		out.println("minlabs(" + minlabs + ")");
-		out.println("maxlabs(" + maxlabs + ")");
-		out.println();
-		out.println("//TIMESLOTS");
-		for (int i = 0; i < schedule.size(); i++)
-			out.println("timeslot(" + schedule.elementAt(i).getName() + ")");
-		for (int i = 0; i < schedule.size(); i++) {
-			for (int j = 0; j < schedule.elementAt(i).getConflict().size(); j++)
-				out.println("conflict(" + schedule.elementAt(i).getConflict().elementAt(j).getName() + ")");
+	public static void output(String fileName, PredicateReader env) {
+		PrintWriter out;
+		try {
+			out = new PrintWriter(fileName);
+			
+			out.println("minlabs(" + minlabs + ")");
+			out.println("maxlabs(" + maxlabs + ")");
+			out.println();
+			out.println("//TIMESLOTS");
+			for (int i = 0; i < schedule.size(); i++)
+				out.println("timeslot(" + schedule.elementAt(i).getName() + ")");
+			for (int i = 0; i < schedule.size(); i++) {
+				for (int j = 0; j < schedule.elementAt(i).getConflict().size(); j++)
+					out.println("conflicts(" + schedule.elementAt(i).getName() + ", " + 
+							schedule.elementAt(i).getConflict().elementAt(j).getName() + ")");
+			}
+			out.println();
+			out.println("//INSTRUCTORS");
+			for (int i = 0; i < instructorList.size(); i++)
+				out.println("instructor(" + instructorList.elementAt(i).getName() + ")");
+			out.println();
+			out.println("//TAs");
+			for (int i = 0; i < taList.size(); i++)
+				out.println("TA(" + taList.elementAt(i).getName() + ")");
+			out.println();
+			out.println("//COURSES");
+			out.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		out.println();
-		out.println("//INSTRUCTORS");
-		for (int i = 0; i < instructorList.size(); i++)
-			out.println("instructor(" + instructorList.elementAt(i).getName() + ")");
-		out.println();
-		out.println("//TAs");
-		for (int i = 0; i < taList.size(); i++)
-			out.println("TA(" + taList.elementAt(i).getName() + ")");
-		out.println();
-		out.println("//COURSES");
+		
+		
 		/*
 		for (int i = 0; i < courseList.size(); i++) {
 			if (courseList.elementAt(i).isSenior())
@@ -775,7 +858,6 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				for (int k = 0; k < instructorList.size(); k++) {
 					for (int l = 0; l < 
 		*/
-		out.close();
 	}
 	
 	static void println(String s) {
