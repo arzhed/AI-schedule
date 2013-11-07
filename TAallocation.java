@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -735,6 +736,46 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		} catch (Exception e) {
 			println("exiting: "+e.toString());
 		}
+	}
+	
+	public void output(String fileName) {
+		PrintWriter out = new PrintWriter(fileName);
+		
+		out.println("minlabs(" + minlabs + ")");
+		out.println("maxlabs(" + maxlabs + ")");
+		out.println();
+		out.println("//TIMESLOTS");
+		for (int i = 0; i < schedule.size(); i++)
+			out.println("timeslot(" + schedule.elementAt(i).getName() + ")");
+		for (int i = 0; i < schedule.size(); i++) {
+			for (int j = 0; j < schedule.elementAt(i).getConflict().size(); j++)
+				out.println("conflict(" + schedule.elementAt(i).getConflict().elementAt(j).getName() + ")");
+		}
+		out.println();
+		out.println("//INSTRUCTORS");
+		for (int i = 0; i < instructorList.size(); i++)
+			out.println("instructor(" + instructorList.elementAt(i).getName() + ")");
+		out.println();
+		out.println("//TAs");
+		for (int i = 0; i < taList.size(); i++)
+			out.println("TA(" + taList.elementAt(i).getName() + ")");
+		out.println();
+		out.println("//COURSES");
+		/*
+		for (int i = 0; i < courseList.size(); i++) {
+			if (courseList.elementAt(i).isSenior())
+				out.println("senior-course(" + courseList.elementAt(i).getName() + ")");
+			else if (courseList.elementAt(i).isGrad())
+				out.println("grad-course(" + courseList.elementAt(i).getName() + ")");
+			else 
+				out.println("course(" + courseList.elementAt(i).getName() + ")");
+			for (int j = 0; j < courseList.getLectureList().size(); j++) {
+				out.println("lecture(" + courseList.elementAt(i).getLectureList().elementAt(j) + ")");
+				out.println("at(" + courseList.elementAt(i).getLectureList().elementAt(j).getTime().getName() + ")");
+				for (int k = 0; k < instructorList.size(); k++) {
+					for (int l = 0; l < 
+		*/
+		out.close();
 	}
 	
 	static void println(String s) {
