@@ -35,6 +35,11 @@ public class TA extends Entity {
 	}
 	
 	public void setKnows(Course c){
+		for (int i = 0; i < knows.size(); i++) {
+			if (c.equals(knows.elementAt(i))) {
+				return;
+			}
+		}
 		knows.add(c);
 	}
 	

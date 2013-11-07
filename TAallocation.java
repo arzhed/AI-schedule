@@ -43,8 +43,13 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	
 	public void a_TA(String p) {
 		// if ta does not exist, add ta to the list
-		if (!e_TA(p))
+		if (!e_TA(p)) {
+			TA newTA = new TA(p);
+			for (int i = 0; i < juniorCourses.size(); i++) {
+				newTA.setKnows(juniorCourses.elementAt(i));
+			}
 			taList.add(new TA(p));
+		}		
 		else
 			println("Warning: TA already created.");
 	}
