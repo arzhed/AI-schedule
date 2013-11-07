@@ -5,7 +5,7 @@ import java.util.Vector;
 public class TA extends Entity {
 	
 	private Course[] prefers = new Course[3];
-	private Vector<Course> taking = new Vector<Course>();
+	private Vector<Lecture> taking = new Vector<Lecture>();
 	private Vector<Course> knows = new Vector<Course>();
 	private Vector<Timeslot> schedule = new Vector<Timeslot>();
 	
@@ -25,7 +25,11 @@ public class TA extends Entity {
 		return prefers[preference - 1];
 	}
 	
-	public Vector<Course> getTaking() {
+	public void setTaking(Lecture lec) {
+		taking.add(lec);
+	}
+	
+	public Vector<Lecture> getTaking() {
 		return taking;
 	}
 	

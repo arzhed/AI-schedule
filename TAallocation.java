@@ -13,8 +13,6 @@ import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import taAllocation.Test.TestInst;
-
 public class TAallocation extends PredicateReader implements TAallocationPredicates
 {	
 	static PrintStream traceFile;
@@ -563,13 +561,35 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	public void a_taking(String ta, String c, String l) {
-		if (!e_taking( ta, c, l)) {
-			println("Unimplemented");
-		}else
+		if (!e_taking(ta, c, l)) {
+			for (int i = 0; i < taList.size(); i++) {
+				if (ta.equals(taList.elementAt(i).getName())) {
+					for (int j = 0; j < courseList.size(); j++) {
+						if (c.equals(courseList.elementAt(j).getName())) {
+							for (int k = 0; k < courseList.elementAt(j).getLectures().size(); k++) {
+								if (l.equals(courseList.elementAt(j).getLectures().elementAt(k).getName())) {
+									taList.elementAt(i).setTaking(courseList.elementAt(j).getLectures().elementAt(k));
+								}
+							}
+						}
+					}
+				}
+			}
+		} else
 			println("Warning: this TA is already taking this course and this lab/lecture.");
 	}
 	public boolean e_taking(String ta, String c, String l) {
-		println("Unimplemented");
+		for (int i = 0; i < taList.size(); i++) {
+			if (ta.equals(taList.elementAt(i).getName())) {
+				for (int j = 0; j < taList.elementAt(i).getTaking().size(); j++) {
+					if (l.equals(taList.elementAt(i).getTaking().elementAt(j))) {
+						if (c.equals(taList.elementAt(i).getTaking().elementAt(j).getCourse().getName())) {
+							return true;
+						}
+					}
+				}
+			}
+		}
 		return false;
 	}
 	
@@ -584,10 +604,10 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 					J=i;
 				}
 			}
-			if (I==-1 || J==-1)
-				println("Error: Timeslot not found.");
-			else if (I == J)
-				println("Error: Timeslots are the same.");
+			if (I==-1)
+				a_timeslot(t1);
+			if (J==-1)
+				a_timeslot(t2);
 			else {
 				schedule.elementAt(I).addConflict(schedule.elementAt(J));
 				schedule.elementAt(J).addConflict(schedule.elementAt(I));
@@ -597,6 +617,9 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			println("Warning: timeslot conflict already created.");
 	}
 	public boolean e_conflicts(String t1, String t2) {
+		if (t1 == t2)
+			return true;
+		
 		for (int i = 0; i < schedule.size(); i++) {
 			if (t1.equals(schedule.elementAt(i).getName())){
 				if (schedule.elementAt(i).getConflict()!= null) {
@@ -616,7 +639,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	public static void main(String[] args) {
 		try {
 			traceFile = new PrintStream(new FileOutputStream("trace.out"));
-			traceFile.print("Trace taAllocation.Test");
+			traceFile.print("Trace taAllocation.TAallocation");
 			for (String s: args) traceFile.print(" "+s);
 			traceFile.println("\n"+new java.util.Date());
 			}
