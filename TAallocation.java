@@ -21,7 +21,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	/**
 	 * The default for the max time command line parameter. 
 	 */
-	static final int	DEFAULT_MAX_TIME	=30000;
+	static final int	DEFAULT_MAX_TIME = 30000;
 	
 	private static Vector<TA> taList = new Vector<TA>();
 	private static Vector<Instructor> instructorList = new Vector<Instructor>();
@@ -837,6 +837,54 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				out.println("TA(" + taList.elementAt(i).getName() + ")");
 			out.println();
 			out.println("//COURSES");
+			for (int i = 0; i < courseList.size(); i++) {
+				if (courseList.elementAt(i).isSenior())
+					out.println("senior-course(" + courseList.elementAt(i).getName() + ")");
+				else if (courseList.elementAt(i).isGrad())
+					out.println("grad-course(" + courseList.elementAt(i).getName() + ")");
+				else 
+					out.println("course(" + courseList.elementAt(i).getName() + ")");
+				for (int j = 0; j < courseList.elementAt(i).getLectureList().size(); j++) {
+					out.println("lecture(" + courseList.elementAt(i).getLectureList().elementAt(j) + ")");
+					out.println("at(" + courseList.elementAt(i).getLectureList().elementAt(j).getTime().getName() + ")");
+					for (int k = 0; k < instructorList.size(); k++) {
+						for (int l = 0; l < instructorList.elementAt(k).getInstructList().size(); l++) {
+							if (instructorList.elementAt(k).getInstructList().elementAt(l).equals(new Pair<courseList.elementAt(i), courseList.elementAt(i).getLectureList().elementAt(j).getName()>)) {
+								out.println("instructs(" + instructorList.elementAt(k).getName() + ", " + courseList.elementAt(i).getName() + ", " + courseList.elementAt(i).getLectureList().elementAt(j).getName() + ")");
+							}
+						}
+					}
+					for (int k = 0; k < courseList.elementAt(i).getLectureList().getElementAt(j).getLabList().size(); k++) {
+						out.println("lab(" + courseList.elementAt(i).getLectureList().getElementAt(j).getLabList().elementAt(k).getName() + ")");
+						out.println("at(" + courseList.elementAt(i).getLectureList().getElementAt(j).getLabList().elementAt(k).getTime().getName() + ")");
+					}
+				}
+				out.println();
+			}
+			out.println();
+			out.println("//Instructor details");
+			for (int i = 0; i < instructorList.size(); i++) {
+				for (int j = 0; j < instructorList.elementAt(i).getPrefersTA().size(); j++) {
+					out.println("prefers(" + instructorList.elementAt(i).getName() + ", " + instructorList.elementAt(i).getPrefersTA().elementAt(j).getName() + ", " + instructorList.elementAt(i).getPrefersC().elementAt(j).getName() + ")");
+				}
+			}
+			out.println();
+			out.println("//TA details");
+			for (int i = 0; i < taList.size(); i++) {
+				for (int j = 0; j < taList.elementAt(i).getTaking().size(); j++) {
+					out.println("taking(" + taList.elementAt(i).getName() + ", " + taList.elementAt(i).getTaking().elementAt(j).getCourse().getName() + ", " +taList.elementAt(i).getTaking().elementAt(j).getName() + ")");
+				}
+				for (int j = 0; j < taList.elementAt(i).getKnows().size(); j++) {
+					out.println("knows(" + taList.elementAt(i).getName() + ", " + taList.elementAt(i).getKnows().elementAt(j).getName() + ")");
+				}
+				for (int j = 0; j < 3; j++) {
+					if (taList.elementAt(i).getPrefers(j) != null) {
+						out.println("prefers" + j + "(" + taList.elementAt(i).getName() + ", " + taList.elementAt(i).getPrefers(j).getName() + ")");
+					}
+				}
+				out.println();
+			}
+			
 			out.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
