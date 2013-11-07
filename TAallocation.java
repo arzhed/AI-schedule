@@ -844,19 +844,19 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 					out.println("grad-course(" + courseList.elementAt(i).getName() + ")");
 				else 
 					out.println("course(" + courseList.elementAt(i).getName() + ")");
-				for (int j = 0; j < courseList.elementAt(i).getLectureList().size(); j++) {
-					out.println("lecture(" + courseList.elementAt(i).getLectureList().elementAt(j) + ")");
-					out.println("at(" + courseList.elementAt(i).getLectureList().elementAt(j).getTime().getName() + ")");
+				for (int j = 0; j < courseList.elementAt(i).getLectures().size(); j++) {
+					out.println("lecture(" + courseList.elementAt(i).getLectures().elementAt(j) + ")");
+					out.println("at(" + courseList.elementAt(i).getLectures().elementAt(j).getTime().getName() + ")");
 					for (int k = 0; k < instructorList.size(); k++) {
 						for (int l = 0; l < instructorList.elementAt(k).getInstructList().size(); l++) {
-							if (instructorList.elementAt(k).getInstructList().elementAt(l).equals(new Pair<courseList.elementAt(i), courseList.elementAt(i).getLectureList().elementAt(j).getName()>)) {
-								out.println("instructs(" + instructorList.elementAt(k).getName() + ", " + courseList.elementAt(i).getName() + ", " + courseList.elementAt(i).getLectureList().elementAt(j).getName() + ")");
+							if (instructorList.elementAt(k).getInstructList().elementAt(l).equals(new Pair<Course,Lecture>(courseList.elementAt(i), courseList.elementAt(i).getLectures().elementAt(j)))) {
+								out.println("instructs(" + instructorList.elementAt(k).getName() + ", " + courseList.elementAt(i).getName() + ", " + courseList.elementAt(i).getLectures().elementAt(j).getName() + ")");
 							}
 						}
 					}
-					for (int k = 0; k < courseList.elementAt(i).getLectureList().getElementAt(j).getLabList().size(); k++) {
-						out.println("lab(" + courseList.elementAt(i).getLectureList().getElementAt(j).getLabList().elementAt(k).getName() + ")");
-						out.println("at(" + courseList.elementAt(i).getLectureList().getElementAt(j).getLabList().elementAt(k).getTime().getName() + ")");
+					for (int k = 0; k < courseList.elementAt(i).getLectures().elementAt(j).getLabList().size(); k++) {
+						out.println("lab(" + courseList.elementAt(i).getLectures().elementAt(j).getLabList().elementAt(k).getName() + ")");
+						out.println("at(" + courseList.elementAt(i).getLectures().elementAt(j).getLabList().elementAt(k).getTime().getName() + ")");
 					}
 				}
 				out.println();
@@ -878,8 +878,8 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 					out.println("knows(" + taList.elementAt(i).getName() + ", " + taList.elementAt(i).getKnows().elementAt(j).getName() + ")");
 				}
 				for (int j = 0; j < 3; j++) {
-					if (taList.elementAt(i).getPrefers(j) != null) {
-						out.println("prefers" + j + "(" + taList.elementAt(i).getName() + ", " + taList.elementAt(i).getPrefers(j).getName() + ")");
+					if (taList.elementAt(i).getPrefer(j) != null) {
+						out.println("prefers" + j + "(" + taList.elementAt(i).getName() + ", " + taList.elementAt(i).getPrefer(j).getName() + ")");
 					}
 				}
 				out.println();
