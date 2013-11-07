@@ -29,8 +29,8 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	private static Vector<Course> juniorCourses = new Vector<Course>();
 	private static Vector<Timeslot> schedule = new Vector<Timeslot>();
 	
-	private static Long maxlabs;
-	private static Long minlabs;
+	private static Long maxlabs = (long)3;
+	private static Long minlabs = (long)1;
 	
 	
 	public void a_maxlabs(Long p) {
@@ -687,10 +687,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				a_timeslot(t1);
 			if (J==-1)
 				a_timeslot(t2);
-			else {
+			if (I != -1 && J != -1) {
 				schedule.elementAt(I).addConflict(schedule.elementAt(J));
 				schedule.elementAt(J).addConflict(schedule.elementAt(I));
-			}
+			} else
+				a_conflicts(t1, t2);
+			
 		}
 	}
 	public boolean e_conflicts(String t1, String t2) {
