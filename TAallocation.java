@@ -856,7 +856,8 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				out.println("lecture(" + courseList.elementAt(i).getLectureList().elementAt(j) + ")");
 				out.println("at(" + courseList.elementAt(i).getLectureList().elementAt(j).getTime().getName() + ")");
 				for (int k = 0; k < instructorList.size(); k++) {
-					for (int l = 0; l < 
+					for (int l = 0; l < instructorList.getInstructList().size(); l++) {
+						
 		*/
 	}
 	
