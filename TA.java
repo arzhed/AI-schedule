@@ -18,11 +18,11 @@ public class TA extends Entity {
 	}
 	
 	public void setPrefer(Course c, int preference) {
-		prefers[preference] = c;
+		prefers[preference - 1] = c;
 	}
 	
 	public Course getPrefer(int preference) {
-		return prefers[preference];
+		return prefers[preference - 1];
 	}
 	
 	public Vector<Course> getTaking() {

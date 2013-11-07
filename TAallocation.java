@@ -1,16 +1,28 @@
 package taAllocation;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import taAllocation.Test.TestInst;
+
 public class TAallocation extends PredicateReader implements TAallocationPredicates
-{
+{	
 	static PrintStream traceFile;
+	
+	/**
+	 * The default for the max time command line parameter. 
+	 */
+	static final int	DEFAULT_MAX_TIME	=30000;
 	
 	private Vector<TA> taList = new Vector<TA>();
 	private Vector<Instructor> instructorList = new Vector<Instructor>();
@@ -568,12 +580,14 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			for (int i = 0; i < schedule.size(); i++) {
 				if (t1.equals(schedule.elementAt(i).getName())){
 					I=i;
-				}else if (t2.equals(schedule.elementAt(i).getName())){
+				} else if (t2.equals(schedule.elementAt(i).getName())){
 					J=i;
 				}
 			}
 			if (I==-1 || J==-1)
 				println("Error: Timeslot not found.");
+			else if (I == J)
+				println("Error: Timeslots are the same.");
 			else {
 				schedule.elementAt(I).addConflict(schedule.elementAt(J));
 				schedule.elementAt(J).addConflict(schedule.elementAt(I));
@@ -608,13 +622,60 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			}
 		catch (Exception ex) {traceFile = null;}
 		
-		PredicateReader env = new TAallocation();
-    	String outfilename = "saved.out";
-		commandMode(env);
+		if (args.length>=1) {
+			long runtime = DEFAULT_MAX_TIME;
+		    if (args.length<2) {
+		    	//printSynopsis();
+		    	println("No run time given; assuming run time of "+runtime+" seconds");
+		    }
+		    else {
+		    	runtime = new Long(args[1]).longValue();
+		    }
+		    
+		    PredicateReader env = new TAallocation();
+			getInput(args[0],runtime, env);
+		}
+	    else { // go into "command mode" if there's nothing on the command line
+	    	PredicateReader env = new TAallocation();
+	    	//printSynopsis();
+	    	String outfilename = "saved.out";
+			commandMode(env);
+	    }
+		
+		if (traceFile!=null) {
+			traceFile.println(new java.util.Date());
+			traceFile.close();
+		}
     }
 	
 	public TAallocation() {
 		super("name");
+	}
+	
+	public static void getInput(String filename, Long runtime, PredicateReader env) {
+		try {
+			FileInputStream filestream = new FileInputStream(filename);
+			BufferedReader buffRead = new BufferedReader(new InputStreamReader(filestream));
+			String line;
+			
+			while ((line = buffRead.readLine()) != null) {
+				if (line.length() > 0) {
+					// skip over line starting with //, otherwise assert that line
+					if (line.startsWith("//"))
+						continue;
+					else
+						env.assert_(line);
+				}
+			}
+			
+			buffRead.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -662,4 +723,20 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		System.out.print(s);
 		traceFile.print(s);
 	}
+	
+	static void write(byte[] s, int offset, int count) throws Exception {
+		System.out.write(s, offset, count);
+		traceFile.write(s, offset, count);
+	}
+	
+	/**
+	 * Utility method the create an output filename from an input filename.
+	 * @param in A String representing the input filename
+	 * @return an appropriate output filename (which is the input filename + ".out")
+	 */
+	static String makeOutfilename(String in) {
+		return in+".out";
+	}
+	
+	static long max(long a, long b) {return a>b?a:b;}
 }
