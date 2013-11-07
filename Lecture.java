@@ -14,6 +14,16 @@ public class Lecture extends Entity {
 	public Lecture(Lecture lecture) {
 		super(lecture);
 	}
+	
+	public Lecture(Lecture lecture, Course c) {
+		super(lecture);
+		course = c;
+	}
+	
+	public Lecture(String name, Course c) {
+		super(name);
+		course = c;
+	}
 
     public Vector<Lab> getLabList() {
         return labList;

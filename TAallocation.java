@@ -192,7 +192,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			Course tmpCourse = new Course(c);
 			for (int i = 0; i < courseList.size(); i++) {
 				if (tmpCourse.equals(courseList.elementAt(i))) {
-					courseList.elementAt(i).addLecture(new Lecture(lec));
+					courseList.elementAt(i).addLecture(new Lecture(lec, tmpCourse));
 				}
 			}
 		}
@@ -845,8 +845,8 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				else 
 					out.println("course(" + courseList.elementAt(i).getName() + ")");
 				for (int j = 0; j < courseList.elementAt(i).getLectures().size(); j++) {
-					out.println("lecture(" + courseList.elementAt(i).getLectures().elementAt(j) + ")");
-					out.println("at(" + courseList.elementAt(i).getLectures().elementAt(j).getTime().getName() + ")");
+					out.println("lecture(" + courseList.elementAt(i).getName() + ", " + courseList.elementAt(i).getLectures().elementAt(j).getName() + ")");
+					out.println("at(" + courseList.elementAt(i).getName() + ", " + courseList.elementAt(i).getLectures().elementAt(j).getName() + ", " +	 courseList.elementAt(i).getLectures().elementAt(j).getTime().getName() + ")");
 					for (int k = 0; k < instructorList.size(); k++) {
 						for (int l = 0; l < instructorList.elementAt(k).getInstructList().size(); l++) {
 							if (instructorList.elementAt(k).getInstructList().elementAt(l).equals(new Pair<Course,Lecture>(courseList.elementAt(i), courseList.elementAt(i).getLectures().elementAt(j)))) {
@@ -855,8 +855,8 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 						}
 					}
 					for (int k = 0; k < courseList.elementAt(i).getLectures().elementAt(j).getLabList().size(); k++) {
-						out.println("lab(" + courseList.elementAt(i).getLectures().elementAt(j).getLabList().elementAt(k).getName() + ")");
-						out.println("at(" + courseList.elementAt(i).getLectures().elementAt(j).getLabList().elementAt(k).getTime().getName() + ")");
+						out.println("lab(" + courseList.elementAt(i).getName() + ", " + courseList.elementAt(i).getLectures().elementAt(j).getName() + ", " + courseList.elementAt(i).getLectures().elementAt(j).getLabList().elementAt(k).getName() + ")");
+						out.println("at(" + courseList.elementAt(i).getName() + ", " + courseList.elementAt(i).getLectures().elementAt(j).getLabList().elementAt(k).getName() + ", " + courseList.elementAt(i).getLectures().elementAt(j).getLabList().elementAt(k).getTime().getName() + ")");
 					}
 				}
 				out.println();
@@ -877,7 +877,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				for (int j = 0; j < taList.elementAt(i).getKnows().size(); j++) {
 					out.println("knows(" + taList.elementAt(i).getName() + ", " + taList.elementAt(i).getKnows().elementAt(j).getName() + ")");
 				}
-				for (int j = 0; j < 3; j++) {
+				for (int j = 1; j < 4; j++) {
 					if (taList.elementAt(i).getPrefer(j) != null) {
 						out.println("prefers" + j + "(" + taList.elementAt(i).getName() + ", " + taList.elementAt(i).getPrefer(j).getName() + ")");
 					}
@@ -890,23 +890,6 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		/*
-		for (int i = 0; i < courseList.size(); i++) {
-			if (courseList.elementAt(i).isSenior())
-				out.println("senior-course(" + courseList.elementAt(i).getName() + ")");
-			else if (courseList.elementAt(i).isGrad())
-				out.println("grad-course(" + courseList.elementAt(i).getName() + ")");
-			else 
-				out.println("course(" + courseList.elementAt(i).getName() + ")");
-			for (int j = 0; j < courseList.getLectureList().size(); j++) {
-				out.println("lecture(" + courseList.elementAt(i).getLectureList().elementAt(j) + ")");
-				out.println("at(" + courseList.elementAt(i).getLectureList().elementAt(j).getTime().getName() + ")");
-				for (int k = 0; k < instructorList.size(); k++) {
-					for (int l = 0; l < instructorList.getInstructList().size(); l++) {
-						
-		*/
 	}
 	
 	static void println(String s) {
