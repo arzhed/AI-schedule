@@ -924,4 +924,83 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	static long max(long a, long b) {return a>b?a:b;}
+	
+	public int labCount(String TA,Solution S)
+	{
+		int labCOUNT = 0;
+		Vector<Pair<Lab, TA>> solution = S.getSolution();
+		for (Pair<Lab, TA> P : solution)
+			if (P.getValue().getName().equals(TA))
+				labCOUNT+=labCOUNT;
+		return labCOUNT;
+	}
+	
+	public int taCountPerLab(String lab,Solution S)
+	{
+		int taCOUNT = 0;
+		Vector<Pair<Lab, TA>> solution = S.getSolution();
+		for (Pair<Lab, TA> P : solution)
+			if (P.getKey().getName().equals(lab))
+				taCOUNT+=taCOUNT;
+		return taCOUNT;
+	}
+	
+	public Vector<Lab> labListPerTA(String TA,Solution S)
+	{
+		Vector<Lab> labList = new Vector<Lab>();
+		Vector<Pair<Lab, TA>> solution = S.getSolution();
+		for (Pair<Lab, TA> P : solution)
+			if (P.getValue().getName().equals(TA))
+				labList.add(P.getKey());
+		return labList;
+	}
+	
+	public boolean checkHardConstraints(Solution S){
+		
+		int labCOUNT;
+		for (TA ta : taList)
+		{
+			labCOUNT=labCount(ta.getName(),S);
+			//every TA is assigned at most MAX_LABS labs
+			if (labCOUNT>maxlabs)
+				return false;
+			//every TA is assigned at least MIN_LABS labs (if the TA *has* a lab assignment)
+			if (labCOUNT!=0 && labCOUNT<minlabs)
+				return false;
+			
+			Vector<Lab> labList = labListPerTA(ta.getName(), S);
+			
+			for (Lab l : labList )
+				for (Lab l2 : labList )
+					//no TA is assigned simultaneous labs
+					if (!l2.equals(l) && e_conflicts(l.getTime().getName(), l2.getTime().getName()))
+						return false;
+			
+			for (Lecture L : ta.getTaking())
+				for (Lab l : labList )
+					//no TA is assigned a lab that conflicts with his/her own courses
+					if (e_conflicts(l.getTime().getName(), L.getTime().getName()))
+							return false;
+		}
+
+		for (Course c : courseList)
+			for (Lecture L : c.getLectures())
+				for (Lab lab : L.getLabList())
+					// no lab has more than one TA assigned to it
+					// and
+					// every lab has a TA assigned to it
+					if (taCountPerLab(lab.getName(),S)!=1)
+						return false;
+		
+		for (Course c : juniorCourses)
+			for (Lecture L : c.getLectures())
+				for (Lab lab : L.getLabList())
+					// no lab has more than one TA assigned to it
+					// and
+					// every lab has a TA assigned to it
+					if (taCountPerLab(lab.getName(),S)!=1)
+						return false;
+		
+		return true;
+	}
 }
