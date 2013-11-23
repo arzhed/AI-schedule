@@ -1003,4 +1003,146 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		
 		return true;
 	}
+	
+	public int checkSC0(TA ta,Solution S)
+	{
+		// Each TA should be funded (that is, they should teach at least one course)
+		if (labCount(ta.getName(),S)==0)
+				return -50;		
+		return 0;
+	}
+	
+	public int checkSC1(TA ta,Solution S)
+	{
+		// TAs should get their first choice course
+		for (Pair<Lab, TA> solution : S.getSolution())
+			if (solution.getValue().equals(ta) 
+					&& !e_prefers1(ta.getName(), solution.getKey().getLecture().getCourse().getName()))
+					return -5;
+		return 0;
+	}
+	
+	public int checkSC2(TA ta,Solution S)
+	{
+		// TAs should get their first or second choice course 
+		for (Pair<Lab, TA> solution : S.getSolution())
+			if (solution.getValue().equals(ta) 
+					&& !e_prefers1(ta.getName(), solution.getKey().getLecture().getCourse().getName())
+					&& !e_prefers2(ta.getName(), solution.getKey().getLecture().getCourse().getName()))
+				return -10;
+		return 0;
+	}
+	
+	public int checkSC3(TA ta,Solution S)
+	{
+		// TAs should get their first or second or third choice course 
+		for (Pair<Lab, TA> solution : S.getSolution())
+			if (solution.getValue().equals(ta) 
+					&& !e_prefers1(ta.getName(), solution.getKey().getLecture().getCourse().getName())
+					&& !e_prefers2(ta.getName(), solution.getKey().getLecture().getCourse().getName())
+					&& !e_prefers3(ta.getName(), solution.getKey().getLecture().getCourse().getName()))
+				return -10;
+		return 0;
+	}
+	
+	public int checkSC4(TA ta,Solution S)
+	{
+		// TAs should have all their labs in the same course 
+		Vector<Lab> labList = labListPerTA(ta.getName(),S);
+		Course courseLab0 = labList.elementAt(0).getLecture().getCourse();
+		for (Lab l : labList)
+				if (!l.getLecture().getCourse().equals(courseLab0))
+					return -20;
+		return 0;
+	}
+	
+	public int checkSC5(TA ta,Solution S)
+	{
+		// TAs should have all their labs in no more than 2 courses
+		int difCourse=0;
+		Vector<Lab> labList = labListPerTA(ta.getName(),S);
+		for (Lab l : labList)
+			for (Lab l2 : labList)
+				if (!l.getLecture().getCourse().equals(l2.getLecture().getCourse()))
+					difCourse++;
+		if (difCourse>2)
+			return -35;
+		return 0;
+	}
+	
+	public int checkSC6(TA ta,Solution S)
+	{
+		// TAs should not teach a lab for a course for which they don't know the subject matter
+		int penalty = 0;
+		Vector<Lab> labList = labListPerTA(ta.getName(),S);
+		for (Lab l : labList)
+			if (!e_knows(ta.getName(),l.getLecture().getCourse().getName()))
+				penalty -= 30;
+		return penalty;
+	}
+	
+	public int checkSC7(TA ta,Solution S)
+	{
+		// TAs should not teach two labs of distinct courses at the senior level
+		Vector<Lab> labList = labListPerTA(ta.getName(),S);
+		Course courseLab0 = labList.elementAt(0).getLecture().getCourse();
+		for (Lab l : labList)
+				if (!l.getLecture().getCourse().equals(courseLab0) && l.getLecture().getCourse().isSenior())
+					return -10;
+		return 0;
+	}
+	
+	public int checkSC8(TA ta,Solution S,int leastNBLabs)
+	{
+		// TAs should not teach more than one more lab than the TA that teaches the least number of labs. 
+		if (labCount(ta.getName(), S) > leastNBLabs + 1 )
+			return -25;
+		return 0;
+	}
+	
+	public int checkSC9(TA ta,Solution S,int NBLabs)
+	{
+		// TAs should all teach the same number of labs. 
+		if (labCount(ta.getName(), S) !=  NBLabs)
+			return -5;
+		return 0;
+	}
+	
+	public int checkSC10(TA ta,Solution S)
+	{
+		// If the instructor requested particular TAs for his/her course,
+        // each of the lecture the instructor is teaching for that course should be taught by one of the requested TAs
+		for (Instructor I : instructorList)
+			for (Pair<Course,Lecture> P : I.getInstructList())
+				if (e_prefers(I.getName(), ta.getName(), P.getKey().getName()))
+					for (Lab L : P.getValue().getLabList())
+						for (Pair<Lab, TA> solution : S.getSolution())
+							if (!solution.getKey().equals(L) && solution.getValue().equals(ta))
+								return -10;
+		return 0;
+	}
+	
+	public int checkSoftConstraints(Solution S)
+	{
+		int penalty=0;
+		int leastNBLabs=100;
+		for (TA ta : taList)
+			if (labCount(ta.getName(), S)<leastNBLabs)
+				leastNBLabs=labCount(ta.getName(), S);
+		for (TA ta : taList)
+		{
+			penalty += checkSC0(ta,S);
+			penalty += checkSC1(ta,S);
+			penalty += checkSC2(ta,S);
+			penalty += checkSC3(ta,S);
+			penalty += checkSC4(ta,S);
+			penalty += checkSC5(ta,S);
+			penalty += checkSC6(ta,S);
+			penalty += checkSC7(ta,S);
+			penalty += checkSC8(ta,S,leastNBLabs);
+			penalty += checkSC9(ta,S,leastNBLabs);
+			penalty += checkSC10(ta,S);
+		}
+		return penalty;
+	}
 }
