@@ -1117,7 +1117,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				if (e_prefers(I.getName(), ta.getName(), P.getKey().getName()))
 					for (Lab L : P.getValue().getLabList())
 						for (Pair<Lab, TA> solution : S.getSolution())
-							if (!solution.getKey().equals(L) && solution.getValue().equals(ta))
+							if (solution.getKey().equals(L) && !solution.getValue().equals(ta))
 								return -10;
 		return 0;
 	}
