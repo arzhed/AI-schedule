@@ -28,6 +28,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	private static Vector<Course> courseList = new Vector<Course>();
 	private static Vector<Course> juniorCourses = new Vector<Course>();
 	private static Vector<Timeslot> schedule = new Vector<Timeslot>();
+    private static Vector<Lab> labList = new Vector<Lab>();
 	
 	private static Long maxlabs = (long)3;
 	private static Long minlabs = (long)1;
@@ -247,7 +248,9 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
                     Vector<Lecture> lectureList = courseList.elementAt(i).getLectures();
                     for (int j=0; j<lectureList.size(); j++){
                         if (lec.equals(lectureList.elementAt(j).getName())) {
-                            lectureList.elementAt(j).addLab(new Lab(lab,lectureList.elementAt(j)));
+                            Lab tmpLab = new Lab(lab,lectureList.elementAt(j));
+                            lectureList.elementAt(j).addLab(tmpLab);
+                            labList.add(tmpLab);
                         }
                     }
                 }
