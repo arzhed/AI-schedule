@@ -32,8 +32,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	
 	private static Long maxlabs = (long)3;
 	private static Long minlabs = (long)1;
-	
-	
+
 	public void a_maxlabs(Long p) {
 		maxlabs = p;
 	}
@@ -717,6 +716,18 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		println("Error: Timeslot not found.");
 		return false;
 	}
+
+    public Solution randomGeneration() {
+        Solution sol = new Solution();
+        int random;
+        int labSize = labList.size();
+        int taSize = taList.size();
+        for (int i=0; i<labSize;i++) {
+            random = (int) Math.random() * taSize;
+            sol.addElement(new Pair<Lab, TA>(labList.elementAt(i), taList.elementAt(random)));
+        }
+        return sol;
+    }
 	
 	public static void main(String[] args) {
 		try {
