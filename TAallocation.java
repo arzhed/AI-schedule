@@ -1013,15 +1013,6 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 					if (taCountPerLab(lab.getName(),S)!=1)
 						return false;
 		
-		for (Course c : juniorCourses)
-			for (Lecture L : c.getLectures())
-				for (Lab lab : L.getLabList())
-					// no lab has more than one TA assigned to it
-					// and
-					// every lab has a TA assigned to it
-					if (taCountPerLab(lab.getName(),S)!=1)
-						return false;
-		
 		return true;
 	}
 	
