@@ -717,7 +717,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return false;
 	}
 
-    public Solution randomGeneration() {
+    public static Solution randomGeneration() {
         Solution sol = new Solution();
         int random;
         int labSize = labList.size();
