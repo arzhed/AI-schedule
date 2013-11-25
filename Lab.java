@@ -1,5 +1,7 @@
 package taAllocation;
 
+import java.util.Vector;
+
 public class Lab extends Entity {
 	
 	private TA ta;
@@ -42,5 +44,15 @@ public class Lab extends Entity {
     public void setLecture(Lecture lec) {
         lecture=lec;
     }
-	
+
+    public boolean simultaneousLabs(TA ta, Solution solution) {
+        Vector<Lab> listAssignedLabToTA = TAallocation.labListPerTA(ta.getName(),solution);
+        for (Lab lab : listAssignedLabToTA){
+            if (lab.getTime().equals(this.getTime()))
+                return true;
+        }
+        return false;
+    }
+
+
 }

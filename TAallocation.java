@@ -717,14 +717,21 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return false;
 	}
 
+
     public static Solution randomGeneration() {
         Solution sol = new Solution();
         int random;
         int labSize = labList.size();
         int taSize = taList.size();
-        for (int i=0; i<labSize;i++) {
-            random = (int) Math.random() * taSize;
-            sol.addElement(new Pair<Lab, TA>(labList.elementAt(i), taList.elementAt(random)));
+        for (Lab lab : labList) {
+            TA ta;
+            do {
+                random = (int) Math.random() * taSize;
+                ta =  taList.elementAt(random);
+
+            }   while ( labCount(ta.getName(),sol)== maxlabs || lab.simultaneousLabs(ta,sol) || ta.conflictsCourses(lab));
+
+            sol.addElement(new Pair<Lab, TA>(lab, ta));
         }
         return sol;
     }
@@ -939,7 +946,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	
 	static long max(long a, long b) {return a>b?a:b;}
 	
-	public int labCount(String TA,Solution S)
+	public static int labCount(String TA,Solution S)
 	{
 		int labCOUNT = 0;
 		Vector<Pair<Lab, TA>> solution = S.getSolution();
@@ -959,7 +966,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return taCOUNT;
 	}
 	
-	public Vector<Lab> labListPerTA(String TA,Solution S)
+	public static Vector<Lab> labListPerTA(String TA,Solution S)
 	{
 		Vector<Lab> labList = new Vector<Lab>();
 		Vector<Pair<Lab, TA>> solution = S.getSolution();

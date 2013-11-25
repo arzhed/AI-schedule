@@ -47,5 +47,14 @@ public class TA extends Entity {
 	public Vector<Course> getKnows(){
 		return knows;
 	}
+
+
+    public boolean conflictsCourses(Lab lab){
+        for (int i=0 ; i<taking.size(); i++) {
+            if (taking.elementAt(i).getTime().equals(lab.getTime()))
+                return true;
+        }
+        return false;
+    }
 	
 }
