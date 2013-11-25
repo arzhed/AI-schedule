@@ -9,6 +9,11 @@ public class Lab extends Entity {
 	public Lab(String name) {
 		super(name);
 	}
+
+    public Lab(String name, Lecture lec) {
+        super(name);
+        lecture=lec;
+    }
 	
 	public Lab(Lab lab) {
 		super(lab);

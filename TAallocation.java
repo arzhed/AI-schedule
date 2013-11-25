@@ -197,7 +197,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			Course tmpCourse = new Course(c);
 			for (int i = 0; i < courseList.size(); i++) {
 				if (tmpCourse.equals(courseList.elementAt(i))) {
-					courseList.elementAt(i).addLecture(new Lecture(lec, tmpCourse));
+					courseList.elementAt(i).addLecture(new Lecture(lec, courseList.elementAt(i)));
 				}
 			}
 		}
@@ -247,7 +247,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
                     Vector<Lecture> lectureList = courseList.elementAt(i).getLectures();
                     for (int j=0; j<lectureList.size(); j++){
                         if (lec.equals(lectureList.elementAt(j).getName())) {
-                            lectureList.elementAt(j).addLab(new Lab(lab));
+                            lectureList.elementAt(j).addLab(new Lab(lab,lectureList.elementAt(j)));
                         }
                     }
                 }
