@@ -1126,11 +1126,13 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		// TAs should have all their labs in no more than 2 courses
 		int difCourse=0;
 		Vector<Lab> labList = labListPerTA(ta.getName(),S);
-		for (Lab l : labList)
-			for (Lab l2 : labList)
-				if (!l.getLecture().getCourse().equals(l2.getLecture().getCourse()))
-					difCourse++;
-		if (difCourse>2)
+		if (!labList.isEmpty()){
+	        Course courseLab0 = labList.elementAt(0).getLecture().getCourse();
+            for (Lab l : labList)
+            	if (!l.getLecture().getCourse().equals(courseLab0))
+            		difCourse++;
+		}
+		if (difCourse>1)
 			return -35;
 		return 0;
 	}
@@ -1138,12 +1140,11 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	public int checkSC6(TA ta,Solution S)
 	{
 		// TAs should not teach a lab for a course for which they don't know the subject matter
-		int penalty = 0;
 		Vector<Lab> labList = labListPerTA(ta.getName(),S);
 		for (Lab l : labList)
 			if (!e_knows(ta.getName(),l.getLecture().getCourse().getName()))
-				penalty -= 30;
-		return penalty;
+				return -30;
+		return 0;
 	}
 	
 	public int checkSC7(TA ta,Solution S)
