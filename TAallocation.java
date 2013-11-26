@@ -722,7 +722,6 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
         TAallocation taa = new TAallocation();
         int random;
         int taSize=taList.size();
-        int j=0;
         int i=0;
         OUT : for (Lab lab : labList) {
             TA ta;
@@ -774,7 +773,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			long runtime = DEFAULT_MAX_TIME;
 		    if (args.length<2) {
 		    	//printSynopsis();
-		    	println("No run time given; assuming run time of "+runtime+" seconds");
+		    	println("No run time given; assuming run time of "+runtime+" milliseconds");
 		    }
 		    else {
 		    	runtime = new Long(args[1]).longValue();
