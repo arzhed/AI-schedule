@@ -952,7 +952,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		Vector<Pair<Lab, TA>> solution = S.getSolution();
 		for (Pair<Lab, TA> P : solution)
 			if (P.getValue().getName().equals(TA))
-				labCOUNT+=labCOUNT;
+				labCOUNT++;
 		return labCOUNT;
 	}
 	
@@ -962,7 +962,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		Vector<Pair<Lab, TA>> solution = S.getSolution();
 		for (Pair<Lab, TA> P : solution)
 			if (P.getKey().getName().equals(lab))
-				taCOUNT+=taCOUNT;
+				taCOUNT++;
 		return taCOUNT;
 	}
 	
@@ -1156,5 +1156,15 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			penalty += checkSC10(ta,S);
 		}
 		return penalty;
+	}
+	
+	public void mutate(Solution s) {
+		// if there is a ta with no labs, give them a lab from another ta
+		Vector<TA> noLabs = s.checkNoLabs();
+		if (!noLabs.isEmpty()) {
+			// sort taList by the number of labs each ta has
+			
+			// loop, 
+		}
 	}
 }
