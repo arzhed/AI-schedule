@@ -1038,7 +1038,10 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			for (Lab l : labList )
 				for (Lab l2 : labList )
 					//no TA is assigned simultaneous labs
-                    if (!l2.equals(l) && e_conflicts(l.getTime().getName(), l2.getTime().getName())){
+                    if ( (!l2.equals(l)
+                    		|| ! l2.getLecture().equals(l.getLecture())
+                    		|| ! l2.getLecture().getCourse().equals(l.getLecture().getCourse()))
+                    		&& e_conflicts(l.getTime().getName(), l2.getTime().getName())){
                             System.out.println("one or more TA is assigned simultaneous labs)");
                             return false;
                     }
