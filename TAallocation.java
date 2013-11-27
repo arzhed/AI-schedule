@@ -983,16 +983,6 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	
 	static long max(long a, long b) {return a>b?a:b;}
 	
-	public static int labCount(String TA,Solution S)
-	{
-		int labCOUNT = 0;
-		Vector<Pair<Lab, TA>> solution = S.getSolution();
-		for (Pair<Lab, TA> P : solution)
-			if (P.getValue().getName().equals(TA))
-				labCOUNT++;
-		return labCOUNT;
-	}
-	
 	public int taCountPerLab(Lab lab,Solution S)
 	{
 		int taCOUNT = 0;
@@ -1013,6 +1003,11 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			if (P.getValue().getName().equals(TA))
 				labList.add(P.getKey());
 		return labList;
+	}
+	
+	public static int labCount(String TA,Solution S)
+	{
+		return labListPerTA(TA, S).size();
 	}
 	
 	public boolean checkHardConstraints(Solution S){
