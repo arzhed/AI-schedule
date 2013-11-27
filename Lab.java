@@ -45,14 +45,4 @@ public class Lab extends Entity {
         lecture=lec;
     }
 
-    public boolean simultaneousLabs(TA ta, Solution solution) {
-        Vector<Lab> listAssignedLabToTA = TAallocation.labListPerTA(ta.getName(),solution);
-        for (Lab lab : listAssignedLabToTA){
-            if (lab.getTime().equals(this.getTime()))
-                return true;
-        }
-        return false;
-    }
-
-
 }

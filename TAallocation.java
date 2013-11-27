@@ -717,23 +717,48 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return false;
 	}
 
-
     public static Solution randomGeneration() {
         Solution sol = new Solution();
+        TAallocation taa = new TAallocation();
         int random;
-        int labSize = labList.size();
-        int taSize = taList.size();
-        for (Lab lab : labList) {
+        int taSize=taList.size();
+        int j=0;
+        int i=0;
+        OUT : for (Lab lab : labList) {
             TA ta;
+            i=0;
             do {
-                random = (int) Math.random() * taSize;
+                random = (int) (Math.random() * taSize);
                 ta =  taList.elementAt(random);
-
-            }   while ( labCount(ta.getName(),sol)== maxlabs || lab.simultaneousLabs(ta,sol) || ta.conflictsCourses(lab));
+                i++;
+                if(i== 5*taSize)
+                    break OUT;
+            }   while ( labCount(ta.getName(),sol)== maxlabs || taa.simultaneousLabs(ta,lab,sol) || taa.conflictsCourses(ta,lab));
 
             sol.addElement(new Pair<Lab, TA>(lab, ta));
         }
+
+        if(i== 5*taSize)         //THEORETICAL FAILURE POINT !!!!!!!!!!!!!!!!!!!!!!!
+            return randomGeneration();
+
         return sol;
+    }
+
+    public boolean simultaneousLabs(TA ta, Lab lab, Solution solution) {
+        Vector<Lab> listAssignedLabToTA = TAallocation.labListPerTA(ta.getName(),solution);
+        for (Lab labAs : listAssignedLabToTA){
+            if(e_conflicts(labAs.getTime().getName(), lab.getTime().getName()))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean conflictsCourses(TA ta, Lab lab) {
+        for(Lecture lec : ta.getTaking()) {
+            if(e_conflicts(lec.getTime().getName(), lab.getTime().getName()))
+                return true;
+            }
+        return false;
     }
 	
 	public static void main(String[] args) {
@@ -771,6 +796,18 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			traceFile.println(new java.util.Date());
 			traceFile.close();
 		}
+
+        TAallocation TAa = new TAallocation();
+        Solution S;
+        do {
+            S = randomGeneration();
+        } while (!TAa.checkHardConstraints(S));
+
+        if (TAa.checkHardConstraints(S))
+            System.out.println("HC OK!");
+        else
+            System.out.println("HC not OK!");
+        System.out.println(TAa.checkSoftConstraints(S));
     }
 	
 	public TAallocation() {
@@ -801,6 +838,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 	}
 	
 	/**
@@ -956,13 +994,15 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return labCOUNT;
 	}
 	
-	public int taCountPerLab(String lab,Solution S)
+	public int taCountPerLab(Lab lab,Solution S)
 	{
 		int taCOUNT = 0;
 		Vector<Pair<Lab, TA>> solution = S.getSolution();
 		for (Pair<Lab, TA> P : solution)
-			if (P.getKey().getName().equals(lab))
-				taCOUNT++;
+            if (P.getKey().equals(lab)
+                    && lab.getLecture().equals(P.getKey().getLecture())
+                    && lab.getLecture().getCourse().equals(P.getKey().getLecture().getCourse()))
+                taCOUNT++;
 		return taCOUNT;
 	}
 	
@@ -983,35 +1023,43 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		{
 			labCOUNT=labCount(ta.getName(),S);
 			//every TA is assigned at most MAX_LABS labs
-			if (labCOUNT>maxlabs)
+			if (labCOUNT>maxlabs) {
+                System.out.println("every TA is not assigned at most MAX_LABS labs");
 				return false;
+            }
 			//every TA is assigned at least MIN_LABS labs (if the TA *has* a lab assignment)
-			if (labCOUNT!=0 && labCOUNT<minlabs)
-				return false;
+			if (labCOUNT!=0 && labCOUNT<minlabs) {
+                System.out.println("every TA is not assigned at least MIN_LABS labs (if the TA *has* a lab assignment)");
+                return false;
+            }
 			
 			Vector<Lab> labList = labListPerTA(ta.getName(), S);
 			
 			for (Lab l : labList )
 				for (Lab l2 : labList )
 					//no TA is assigned simultaneous labs
-					if (!l2.equals(l) && e_conflicts(l.getTime().getName(), l2.getTime().getName()))
-						return false;
+                    if (!l2.equals(l) && e_conflicts(l.getTime().getName(), l2.getTime().getName())){
+                            System.out.println("one or more TA is assigned simultaneous labs)");
+                            return false;
+                    }
 			
 			for (Lecture L : ta.getTaking())
 				for (Lab l : labList )
 					//no TA is assigned a lab that conflicts with his/her own courses
-					if (e_conflicts(l.getTime().getName(), L.getTime().getName()))
-							return false;
+                    if (e_conflicts(l.getTime().getName(), L.getTime().getName())){
+                        System.out.println("one or more TA is assigned a lab that conflicts with his/her own courses");
+                        return false;
+                    }
 		}
 
-		for (Course c : courseList)
-			for (Lecture L : c.getLectures())
-				for (Lab lab : L.getLabList())
-					// no lab has more than one TA assigned to it
-					// and
-					// every lab has a TA assigned to it
-					if (taCountPerLab(lab.getName(),S)!=1)
-						return false;
+        for (Lab lab : labList)
+            // no lab has more than one TA assigned to it
+            // and
+            // every lab has a TA assigned to it
+            if (taCountPerLab(lab,S)!=1){
+                System.out.println("one or more lab has more than one TA assigned to it or not every lab has a TA assigned to it");
+                return false;
+            }
 		
 		return true;
 	}
@@ -1061,10 +1109,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	{
 		// TAs should have all their labs in the same course 
 		Vector<Lab> labList = labListPerTA(ta.getName(),S);
-		Course courseLab0 = labList.elementAt(0).getLecture().getCourse();
-		for (Lab l : labList)
-				if (!l.getLecture().getCourse().equals(courseLab0))
-					return -20;
+        if (!labList.isEmpty()){
+            Course courseLab0 = labList.elementAt(0).getLecture().getCourse();
+            for (Lab l : labList)
+                if (!l.getLecture().getCourse().equals(courseLab0))
+                    return -20;
+        }
 		return 0;
 	}
 	
@@ -1097,10 +1147,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	{
 		// TAs should not teach two labs of distinct courses at the senior level
 		Vector<Lab> labList = labListPerTA(ta.getName(),S);
-		Course courseLab0 = labList.elementAt(0).getLecture().getCourse();
-		for (Lab l : labList)
-				if (!l.getLecture().getCourse().equals(courseLab0) && l.getLecture().getCourse().isSenior())
-					return -10;
+        if (!labList.isEmpty()){
+            Course courseLab0 = labList.elementAt(0).getLecture().getCourse();
+            for (Lab l : labList)
+                if (!l.getLecture().getCourse().equals(courseLab0) && l.getLecture().getCourse().isSenior())
+                    return -10;
+        }
 		return 0;
 	}
 	
@@ -1129,7 +1181,10 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				if (e_prefers(I.getName(), ta.getName(), P.getKey().getName()))
 					for (Lab L : P.getValue().getLabList())
 						for (Pair<Lab, TA> solution : S.getSolution())
-							if (solution.getKey().equals(L) && !solution.getValue().equals(ta))
+                            if (solution.getKey().equals(L)
+                                    && solution.getKey().getLecture().equals(L.getLecture())
+                                    && solution.getKey().getLecture().getCourse().equals(L.getLecture().getCourse())
+                                    && !solution.getValue().equals(ta))
 								return -10;
 		return 0;
 	}
