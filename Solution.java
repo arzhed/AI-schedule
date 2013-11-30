@@ -10,7 +10,7 @@ public class Solution {
 	private Vector<TA> noLabs = new Vector<TA>();
 	
 	// holds TAs with more than MIN_LABS
-	private Vector<Pair<TA, int>> moreThanMinLabs = new Vector<Pair<TA, int>>();
+	private Vector<Pair<TA, Integer>> moreThanMinLabs = new Vector<Pair<TA, Integer>>();
 	
 	public void addElement (Pair<Lab, TA> elem) {
 		solution.add(elem);
@@ -42,7 +42,7 @@ public class Solution {
 	}
 	
 	
-	public void makeMTML(Vector<TA>, int min_labs) {
+	public void makeMTML(Vector<TA> ta, int min_labs) {
 		int numGive;
 		for (TA t : ta) {
 			numGive = 0;
@@ -52,7 +52,7 @@ public class Solution {
 				}
 			}
 			if (numGive > min_labs) {
-				moreThanMinLabs.add(new Pair<TA, int>(t, (numGive - min_labs)));
+				moreThanMinLabs.add(new Pair<TA, Integer>(t, (numGive - min_labs)));
 			}
 		}
 	}
@@ -63,16 +63,16 @@ public class Solution {
 		solution.remove(new Pair<Lab, TA>(lab, giver));
 		solution.add(new Pair<Lab, TA>(lab, taker));
 		int i = 0;
-		int numGive;
-		for (Pair<TA, int> pair : moreThanMinLabs) {
-			if (pair.getKey().equals(giver) {
+		int numGive = 0;
+		for (Pair<TA, Integer> pair : moreThanMinLabs) {
+			if (pair.getKey().equals(giver)) {
 				numGive = pair.getValue();
 				break;
 			}
 			i++;
 		}
 		moreThanMinLabs.remove(i);
-		moreThanMinLabs.add(i, new Pair<TA, int>(giver, (numGive - 1));
+		moreThanMinLabs.add(i, new Pair<TA, Integer>(giver, (numGive - 1)));
 	}
 	
 	public void swapLabs(TA ta1, TA ta2, Lab lab1, Lab lab2) {
