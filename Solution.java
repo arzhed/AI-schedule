@@ -59,7 +59,7 @@ public class Solution {
 			
 	
 	// give ta with no labs a lab, preferably from ta with a high # of labs
-	public void giveLab(TA giver, TA taker, Lab lab) {
+	public boolean giveLab(TA giver, TA taker, Lab lab) {
 		solution.remove(new Pair<Lab, TA>(lab, giver));
 		solution.add(new Pair<Lab, TA>(lab, taker));
 		int i = 0;
@@ -73,6 +73,7 @@ public class Solution {
 		}
 		moreThanMinLabs.remove(i);
 		moreThanMinLabs.add(i, new Pair<TA, Integer>(giver, (numGive - 1)));
+		return true;
 	}
 	
 	public void swapLabs(TA ta1, TA ta2, Lab lab1, Lab lab2) {

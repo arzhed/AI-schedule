@@ -736,8 +736,8 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 
             sol.addElement(new Pair<Lab, TA>(lab, ta));
         }
-
-        if(i== 5*taSize)         //THEORETICAL FAILURE POINT !!!!!!!!!!!!!!!!!!!!!!!
+        
+        if(i== 5*taSize)
             return new Solution();
 
         return sol;
@@ -761,6 +761,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
     }
 	
 	public static void main(String[] args) {
+		long startTime = System.currentTimeMillis();
 		try {
 			traceFile = new PrintStream(new FileOutputStream("trace.out"));
 			traceFile.print("Trace taAllocation.TAallocation");
@@ -798,16 +799,63 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 
         TAallocation TAa = new TAallocation();
         Solution S = new Solution();
+        Solution S2 = new Solution();
+        Solution S3 = new Solution();
+        Solution S4 = new Solution();
+        Solution S5 = new Solution();
         do {
             while (S.getSolution().isEmpty())
             	S = randomGeneration();
         } while (!TAa.checkHardConstraints(S));
+        do {
+            while (S2.getSolution().isEmpty())
+            	S2 = randomGeneration();
+        } while (!TAa.checkHardConstraints(S2));
+
+        do {
+            while (S3.getSolution().isEmpty())
+            	S3 = randomGeneration();
+        } while (!TAa.checkHardConstraints(S3));
+
+        do {
+            while (S4.getSolution().isEmpty())
+            	S4 = randomGeneration();
+        } while (!TAa.checkHardConstraints(S4));
+
+        do {
+            while (S5.getSolution().isEmpty())
+            	S5 = randomGeneration();
+        } while (!TAa.checkHardConstraints(S5));
+
 
         if (TAa.checkHardConstraints(S))
             System.out.println("HC OK!");
         else
             System.out.println("HC not OK!");
         System.out.println(TAa.checkSoftConstraints(S));
+        if (TAa.checkHardConstraints(S2))
+            System.out.println("HC OK!");
+        else
+            System.out.println("HC not OK!");
+        System.out.println(TAa.checkSoftConstraints(S2));
+        if (TAa.checkHardConstraints(S3))
+            System.out.println("HC OK!");
+        else
+            System.out.println("HC not OK!");
+        System.out.println(TAa.checkSoftConstraints(S3));
+        if (TAa.checkHardConstraints(S4))
+            System.out.println("HC OK!");
+        else
+            System.out.println("HC not OK!");
+        System.out.println(TAa.checkSoftConstraints(S4));
+        if (TAa.checkHardConstraints(S5))
+            System.out.println("HC OK!");
+        else
+            System.out.println("HC not OK!");
+        System.out.println(TAa.checkSoftConstraints(S5));
+        long endTime = System.currentTimeMillis();
+        
+        System.out.println("Main took " + (endTime - startTime) + " to run.");
     }
 	
 	public TAallocation() {
