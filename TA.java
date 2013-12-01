@@ -28,6 +28,7 @@ public class TA extends Entity {
 	
 	public void setTaking(Lecture lec) {
 		taking.add(lec);
+		schedule.add(lec.getTime());
 	}
 	
 	public Vector<Lecture> getTaking() {
@@ -47,5 +48,4 @@ public class TA extends Entity {
 	public Vector<Course> getKnows(){
 		return knows;
 	}
-	
 }

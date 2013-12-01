@@ -732,13 +732,13 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
                 i++;
                 if(i== 5*taSize)
                     break OUT;
-            }   while ( labCount(ta.getName(),sol)== maxlabs || taa.simultaneousLabs(ta,lab,sol) || taa.conflictsCourses(ta,lab));
+            }   while ( labCount(ta.getName(),sol) >= maxlabs || taa.simultaneousLabs(ta,lab,sol) || taa.conflictsCourses(ta,lab));
 
             sol.addElement(new Pair<Lab, TA>(lab, ta));
         }
 
         if(i== 5*taSize)         //THEORETICAL FAILURE POINT !!!!!!!!!!!!!!!!!!!!!!!
-            return randomGeneration();
+            return new Solution();
 
         return sol;
     }
@@ -797,9 +797,10 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		}
 
         TAallocation TAa = new TAallocation();
-        Solution S;
+        Solution S = new Solution();
         do {
-            S = randomGeneration();
+            while (S.getSolution().isEmpty())
+            	S = randomGeneration();
         } while (!TAa.checkHardConstraints(S));
 
         if (TAa.checkHardConstraints(S))
@@ -911,7 +912,8 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 					out.println("course(" + courseList.elementAt(i).getName() + ")");
 				for (int j = 0; j < courseList.elementAt(i).getLectures().size(); j++) {
 					out.println("lecture(" + courseList.elementAt(i).getName() + ", " + courseList.elementAt(i).getLectures().elementAt(j).getName() + ")");
-					out.println("at(" + courseList.elementAt(i).getName() + ", " + courseList.elementAt(i).getLectures().elementAt(j).getName() + ", " +	 courseList.elementAt(i).getLectures().elementAt(j).getTime().getName() + ")");
+					if (courseList.elementAt(i).getLectures().elementAt(j).hasTime())
+						out.println("at(" + courseList.elementAt(i).getName() + ", " + courseList.elementAt(i).getLectures().elementAt(j).getName() + ", " +	 courseList.elementAt(i).getLectures().elementAt(j).getTime().getName() + ")");
 					for (int k = 0; k < instructorList.size(); k++) {
 						for (int l = 0; l < instructorList.elementAt(k).getInstructList().size(); l++) {
 							if (instructorList.elementAt(k).getInstructList().elementAt(l).equals(new Pair<Course,Lecture>(courseList.elementAt(i), courseList.elementAt(i).getLectures().elementAt(j)))) {

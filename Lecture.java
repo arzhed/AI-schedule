@@ -4,7 +4,7 @@ import java.util.Vector;
 
 public class Lecture extends Entity {
     private Vector<Lab> labList = new Vector<Lab> ();
-    private Timeslot time;
+    private Timeslot time = null;
     private Course course;
 
 	public Lecture(String name) {
@@ -39,6 +39,12 @@ public class Lecture extends Entity {
 
     public void setTime(Timeslot t) {
         time=t;
+    }
+    
+    public boolean hasTime() {
+    	if (time == null)
+    		return false;
+    	return true;
     }
 
     public Course getCourse() {
