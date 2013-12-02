@@ -22,6 +22,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	 * The default for the max time command line parameter. 
 	 */
 	static final int	DEFAULT_MAX_TIME = 30000;
+	private static final int	NUM_SOLUTIONS = 20;
 	
 	private static Vector<TA> taList = new Vector<TA>();
 	private static Vector<Instructor> instructorList = new Vector<Instructor>();
@@ -32,6 +33,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	
 	private static Long maxlabs = (long)3;
 	private static Long minlabs = (long)1;
+	
 
 	public void a_maxlabs(Long p) {
 		maxlabs = p;
@@ -786,9 +788,9 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			// create the first generation set
 			TAallocation TAa = new TAallocation();
 			
-			Solution[] S = new Solution[50];
+			Solution[] S = new Solution[NUM_SOLUTIONS];
 			
-			for (int i = 0; i < 50; i++) {
+			for (int i = 0; i < NUM_SOLUTIONS; i++) {
 				S[i] = new Solution();
 				do {
 					while (S[i].getSolution().isEmpty())
@@ -1242,6 +1244,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		System.out.println("SC8: " + (-SCV[8]/25));
 		System.out.println("SC9: " + (-SCV[9]/5));
 		System.out.println("SC10: " + (-SCV[10]/10));
+		System.out.println("Least number of labs: " + leastNBLabs);
 		for (int i : SCV) {
 			penalty += i;
 		}
