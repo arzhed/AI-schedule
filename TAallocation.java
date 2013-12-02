@@ -782,6 +782,70 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		    
 		    PredicateReader env = new TAallocation();
 			getInput(args[0],runtime, env);
+			
+			// create the first generation set
+			TAallocation TAa = new TAallocation();
+	        Solution S = new Solution();
+	        Solution S2 = new Solution();
+	        Solution S3 = new Solution();
+	        Solution S4 = new Solution();
+	        Solution S5 = new Solution();
+	        do {
+	            while (S.getSolution().isEmpty())
+	            	S = randomGeneration();
+	        } while (!TAa.checkHardConstraints(S));
+	        do {
+	            while (S2.getSolution().isEmpty())
+	            	S2 = randomGeneration();
+	        } while (!TAa.checkHardConstraints(S2));
+
+	        do {
+	            while (S3.getSolution().isEmpty())
+	            	S3 = randomGeneration();
+	        } while (!TAa.checkHardConstraints(S3));
+
+	        do {
+	            while (S4.getSolution().isEmpty())
+	            	S4 = randomGeneration();
+	        } while (!TAa.checkHardConstraints(S4));
+
+	        do {
+	            while (S5.getSolution().isEmpty())
+	            	S5 = randomGeneration();
+	        } while (!TAa.checkHardConstraints(S5));
+
+
+	        if (TAa.checkHardConstraints(S))
+	            System.out.println("HC OK!");
+	        else
+	            System.out.println("HC not OK!");
+	        System.out.println(TAa.checkSoftConstraints(S));
+	        if (TAa.checkHardConstraints(S2))
+	            System.out.println("HC OK!");
+	        else
+	            System.out.println("HC not OK!");
+	        System.out.println(TAa.checkSoftConstraints(S2));
+	        if (TAa.checkHardConstraints(S3))
+	            System.out.println("HC OK!");
+	        else
+	            System.out.println("HC not OK!");
+	        System.out.println(TAa.checkSoftConstraints(S3));
+	        if (TAa.checkHardConstraints(S4))
+	            System.out.println("HC OK!");
+	        else
+	            System.out.println("HC not OK!");
+	        System.out.println(TAa.checkSoftConstraints(S4));
+	        if (TAa.checkHardConstraints(S5))
+	            System.out.println("HC OK!");
+	        else
+	            System.out.println("HC not OK!");
+	        System.out.println(TAa.checkSoftConstraints(S5));
+	        
+	        // loop and mutate set until time runs out
+	        while ((System.currentTimeMillis() - startTime) < runtime) {
+	        	
+	        }
+			
 			String outfilename = makeOutfilename(args[0]);
 			output(outfilename, env);
 		}
@@ -796,63 +860,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			traceFile.println(new java.util.Date());
 			traceFile.close();
 		}
-
-        TAallocation TAa = new TAallocation();
-        Solution S = new Solution();
-        Solution S2 = new Solution();
-        Solution S3 = new Solution();
-        Solution S4 = new Solution();
-        Solution S5 = new Solution();
-        do {
-            while (S.getSolution().isEmpty())
-            	S = randomGeneration();
-        } while (!TAa.checkHardConstraints(S));
-        do {
-            while (S2.getSolution().isEmpty())
-            	S2 = randomGeneration();
-        } while (!TAa.checkHardConstraints(S2));
-
-        do {
-            while (S3.getSolution().isEmpty())
-            	S3 = randomGeneration();
-        } while (!TAa.checkHardConstraints(S3));
-
-        do {
-            while (S4.getSolution().isEmpty())
-            	S4 = randomGeneration();
-        } while (!TAa.checkHardConstraints(S4));
-
-        do {
-            while (S5.getSolution().isEmpty())
-            	S5 = randomGeneration();
-        } while (!TAa.checkHardConstraints(S5));
-
-
-        if (TAa.checkHardConstraints(S))
-            System.out.println("HC OK!");
-        else
-            System.out.println("HC not OK!");
-        System.out.println(TAa.checkSoftConstraints(S));
-        if (TAa.checkHardConstraints(S2))
-            System.out.println("HC OK!");
-        else
-            System.out.println("HC not OK!");
-        System.out.println(TAa.checkSoftConstraints(S2));
-        if (TAa.checkHardConstraints(S3))
-            System.out.println("HC OK!");
-        else
-            System.out.println("HC not OK!");
-        System.out.println(TAa.checkSoftConstraints(S3));
-        if (TAa.checkHardConstraints(S4))
-            System.out.println("HC OK!");
-        else
-            System.out.println("HC not OK!");
-        System.out.println(TAa.checkSoftConstraints(S4));
-        if (TAa.checkHardConstraints(S5))
-            System.out.println("HC OK!");
-        else
-            System.out.println("HC not OK!");
-        System.out.println(TAa.checkSoftConstraints(S5));
+        
         long endTime = System.currentTimeMillis();
         
         System.out.println("Main took " + (endTime - startTime) + " to run.");
@@ -1186,8 +1194,10 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		// TAs should not teach a lab for a course for which they don't know the subject matter
 		Vector<Lab> labList = labListPerTA(ta.getName(),S);
 		for (Lab l : labList)
-			if (!e_knows(ta.getName(),l.getLecture().getCourse().getName()))
+			if (!e_knows(ta.getName(),l.getLecture().getCourse().getName())) {
+				S.addDoesntKnow(new Pair<Lab, TA>(l, ta));
 				return -30;
+			}
 		return 0;
 	}
 	
@@ -1268,6 +1278,27 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			// sort taList by the number of labs each ta has
 			
 			// loop, 
+		}
+		// if ta doesn't know a lab they teach, give it to someone that does know
+		else if (s.getDoesntKnow().isEmpty()) {
+			int i = 0;
+			int random;
+			TA taker;
+			for (Pair<Lab, TA> pair : s.getDoesntKnow()) {
+				do {
+					i++;
+					random = (int) (Math.random() * taList.size());
+					taker = taList.get(random);
+					// if the taker has less than maxlabs and knows the material try giving it to him
+					if (labCount(taker.getName(), s) < maxlabs && taker.getKnows().contains(pair.getKey().getLecture())) {
+						s.giveLab(pair.getValue(), taker, pair.getKey());
+						if (checkHardConstraints(s))
+							return;
+						else
+							s.giveLab(taker, pair.getValue(), pair.getKey());
+					}
+				} while (i < taList.size());
+			}
 		}
 	}
 }

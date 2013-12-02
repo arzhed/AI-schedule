@@ -12,6 +12,9 @@ public class Solution {
 	// holds TAs with more than MIN_LABS
 	private Vector<Pair<TA, Integer>> moreThanMinLabs = new Vector<Pair<TA, Integer>>();
 	
+	// holds TA lab pairs where the TA doesn't know the material for the lab
+	private Vector<Pair<Lab, TA>> doesntKnowLab = new Vector<Pair<Lab, TA>>();
+	
 	public void addElement (Pair<Lab, TA> elem) {
 		solution.add(elem);
 	}
@@ -56,10 +59,18 @@ public class Solution {
 			}
 		}
 	}
-			
+	
+	// adds a pair to doesntKnowLab
+	public void addDoesntKnow(Pair<Lab, TA> pair) {
+		doesntKnowLab.add(pair);
+	}
+	
+	public Vector<Pair<Lab, TA>> getDoesntKnow() {
+		return doesntKnowLab;
+	}
 	
 	// give ta with no labs a lab, preferably from ta with a high # of labs
-	public boolean giveLab(TA giver, TA taker, Lab lab) {
+	public void giveLab(TA giver, TA taker, Lab lab) {
 		solution.remove(new Pair<Lab, TA>(lab, giver));
 		solution.add(new Pair<Lab, TA>(lab, taker));
 		int i = 0;
@@ -73,7 +84,7 @@ public class Solution {
 		}
 		moreThanMinLabs.remove(i);
 		moreThanMinLabs.add(i, new Pair<TA, Integer>(giver, (numGive - 1)));
-		return true;
+		return;
 	}
 	
 	public void swapLabs(TA ta1, TA ta2, Lab lab1, Lab lab2) {
