@@ -785,66 +785,24 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			
 			// create the first generation set
 			TAallocation TAa = new TAallocation();
-	        Solution S = new Solution();
-	        Solution S2 = new Solution();
-	        Solution S3 = new Solution();
-	        Solution S4 = new Solution();
-	        Solution S5 = new Solution();
-	        do {
-	            while (S.getSolution().isEmpty())
-	            	S = randomGeneration();
-	        } while (!TAa.checkHardConstraints(S));
-	        do {
-	            while (S2.getSolution().isEmpty())
-	            	S2 = randomGeneration();
-	        } while (!TAa.checkHardConstraints(S2));
-
-	        do {
-	            while (S3.getSolution().isEmpty())
-	            	S3 = randomGeneration();
-	        } while (!TAa.checkHardConstraints(S3));
-
-	        do {
-	            while (S4.getSolution().isEmpty())
-	            	S4 = randomGeneration();
-	        } while (!TAa.checkHardConstraints(S4));
-
-	        do {
-	            while (S5.getSolution().isEmpty())
-	            	S5 = randomGeneration();
-	        } while (!TAa.checkHardConstraints(S5));
-
-
-	        if (TAa.checkHardConstraints(S))
-	            System.out.println("HC OK!");
-	        else
-	            System.out.println("HC not OK!");
-	        System.out.println(TAa.checkSoftConstraints(S));
-	        if (TAa.checkHardConstraints(S2))
-	            System.out.println("HC OK!");
-	        else
-	            System.out.println("HC not OK!");
-	        System.out.println(TAa.checkSoftConstraints(S2));
-	        if (TAa.checkHardConstraints(S3))
-	            System.out.println("HC OK!");
-	        else
-	            System.out.println("HC not OK!");
-	        System.out.println(TAa.checkSoftConstraints(S3));
-	        if (TAa.checkHardConstraints(S4))
-	            System.out.println("HC OK!");
-	        else
-	            System.out.println("HC not OK!");
-	        System.out.println(TAa.checkSoftConstraints(S4));
-	        if (TAa.checkHardConstraints(S5))
-	            System.out.println("HC OK!");
-	        else
-	            System.out.println("HC not OK!");
-	        System.out.println(TAa.checkSoftConstraints(S5));
+			
+			Solution[] S = new Solution[50];
+			
+			for (int i = 0; i < 50; i++) {
+				S[i] = new Solution();
+				do {
+					while (S[i].getSolution().isEmpty())
+						S[i] = randomGeneration();
+				} while (!TAa.checkHardConstraints(S[i]));
+				System.out.println("HC OK for " + i);
+				System.out.println("SC Score for " + i + ": " + TAa.checkSoftConstraints(S[i]));
+			}
+			
 	        
 	        // loop and mutate set until time runs out
-	        while ((System.currentTimeMillis() - startTime) < runtime) {
+	        /*while ((System.currentTimeMillis() - startTime) < runtime) {
 	        	
-	        }
+	        }*/
 			
 			String outfilename = makeOutfilename(args[0]);
 			output(outfilename, env);
@@ -863,7 +821,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
         
         long endTime = System.currentTimeMillis();
         
-        System.out.println("Main took " + (endTime - startTime) + " to run.");
+        System.out.println("Main took " + (endTime - startTime) + "ms to run.");
     }
 	
 	public TAallocation() {
