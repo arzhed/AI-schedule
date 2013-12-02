@@ -1080,7 +1080,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	public int checkSC0(TA ta,Solution S)
 	{
 		// Each TA should be funded (that is, they should teach at least one course)
-		if (labCount(ta.getName(),S)==0)
+		if (labCount(ta.getName(), S) == 0)
 				return -50;		
 		return 0;
 	}
@@ -1149,35 +1149,38 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	
 	public int checkSC6(TA ta,Solution S)
 	{
+		int total = 0;
 		// TAs should not teach a lab for a course for which they don't know the subject matter
 		Vector<Lab> labList = labListPerTA(ta.getName(),S);
 		for (Lab l : labList)
 			if (!e_knows(ta.getName(),l.getLecture().getCourse().getName())) {
 				S.addDoesntKnow(new Pair<Lab, TA>(l, ta));
-				return -30;
+				total -= 30;
 			}
-		return 0;
+		return total;
 	}
 	
 	public int checkSC7(TA ta,Solution S)
 	{
+		int total = 0;
 		// TAs should not teach two labs of distinct courses at the senior level
 		Vector<Lab> labList = labListPerTA(ta.getName(),S);
         if (!labList.isEmpty()){
             Course courseLab0 = labList.elementAt(0).getLecture().getCourse();
             for (Lab l : labList)
                 if (!l.getLecture().getCourse().equals(courseLab0) && l.getLecture().getCourse().isSenior())
-                    return -10;
+                    total -= 10;
         }
-		return 0;
+		return total;
 	}
 	
 	public int checkSC8(TA ta,Solution S,int leastNBLabs)
 	{
+		int total = 0;
 		// TAs should not teach more than one more lab than the TA that teaches the least number of labs. 
 		if (labCount(ta.getName(), S) > leastNBLabs + 1 )
-			return -25;
-		return 0;
+			total -= 25;
+		return total;
 	}
 	
 	public int checkSC9(TA ta,Solution S,int NBLabs)
@@ -1192,6 +1195,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	{
 		// If the instructor requested particular TAs for his/her course,
         // each of the lecture the instructor is teaching for that course should be taught by one of the requested TAs
+		int total = 0;
 		for (Instructor I : instructorList)
 			for (Pair<Course,Lecture> P : I.getInstructList())
 				if (e_prefers(I.getName(), ta.getName(), P.getKey().getName()))
@@ -1201,30 +1205,45 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
                                     && solution.getKey().getLecture().equals(L.getLecture())
                                     && solution.getKey().getLecture().getCourse().equals(L.getLecture().getCourse())
                                     && !solution.getValue().equals(ta))
-								return -10;
-		return 0;
+                            	total -= 10;
+		return total;
 	}
 	
 	public int checkSoftConstraints(Solution S)
 	{
-		int penalty=0;
+		int penalty = 0;
+		int[] SCV = new int[11];
 		int leastNBLabs=100;
 		for (TA ta : taList)
 			if (labCount(ta.getName(), S)<leastNBLabs)
 				leastNBLabs=labCount(ta.getName(), S);
 		for (TA ta : taList)
 		{
-			penalty += checkSC0(ta,S);
-			penalty += checkSC1(ta,S);
-			penalty += checkSC2(ta,S);
-			penalty += checkSC3(ta,S);
-			penalty += checkSC4(ta,S);
-			penalty += checkSC5(ta,S);
-			penalty += checkSC6(ta,S);
-			penalty += checkSC7(ta,S);
-			penalty += checkSC8(ta,S,leastNBLabs);
-			penalty += checkSC9(ta,S,leastNBLabs);
-			penalty += checkSC10(ta,S);
+			SCV[0] += checkSC0(ta,S);
+			SCV[1] += checkSC1(ta,S);
+			SCV[2] += checkSC2(ta,S);
+			SCV[3] += checkSC3(ta,S);
+			SCV[4] += checkSC4(ta,S);
+			SCV[5] += checkSC5(ta,S);
+			SCV[6] += checkSC6(ta,S);
+			SCV[7] += checkSC7(ta,S);
+			SCV[8] += checkSC8(ta,S,leastNBLabs);
+			SCV[9] += checkSC9(ta,S,leastNBLabs);
+			SCV[10] += checkSC10(ta,S);
+		}
+		System.out.println("SC0: " + (-SCV[0]/50));
+		System.out.println("SC1: " + (-SCV[1]/5));
+		System.out.println("SC2: " + (-SCV[2]/10));
+		System.out.println("SC3: " + (-SCV[3]/10));
+		System.out.println("SC4: " + (-SCV[4]/20));
+		System.out.println("SC5: " + (-SCV[5]/35));
+		System.out.println("SC6: " + (-SCV[6]/30));
+		System.out.println("SC7: " + (-SCV[7]/10));
+		System.out.println("SC8: " + (-SCV[8]/25));
+		System.out.println("SC9: " + (-SCV[9]/5));
+		System.out.println("SC10: " + (-SCV[10]/10));
+		for (int i : SCV) {
+			penalty += i;
 		}
 		return penalty;
 	}
@@ -1248,7 +1267,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 					random = (int) (Math.random() * taList.size());
 					taker = taList.get(random);
 					// if the taker has less than maxlabs and knows the material try giving it to him
-					if (labCount(taker.getName(), s) < maxlabs && taker.getKnows().contains(pair.getKey().getLecture())) {
+					if (labCount(taker.getName(), s) < maxlabs && taker.getKnows().contains(pair.getKey().getLecture().getCourse())) {
 						s.giveLab(pair.getValue(), taker, pair.getKey());
 						if (checkHardConstraints(s))
 							return;

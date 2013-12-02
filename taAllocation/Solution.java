@@ -83,8 +83,9 @@ public class Solution {
 			i++;
 		}
 		moreThanMinLabs.remove(i);
-		moreThanMinLabs.add(i, new Pair<TA, Integer>(giver, (numGive - 1)));
-		return;
+		numGive--;
+		if (numGive > 0)
+			moreThanMinLabs.add(i, new Pair<TA, Integer>(giver, numGive));
 	}
 	
 	public void swapLabs(TA ta1, TA ta2, Lab lab1, Lab lab2) {
