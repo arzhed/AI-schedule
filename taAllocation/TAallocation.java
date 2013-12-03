@@ -1116,9 +1116,10 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	public int checkSC0(TA ta,Solution S)
 	{
 		// Each TA should be funded (that is, they should teach at least one course)
-		if (labCount(ta.getName(), S) == 0)
+		if (labCount(ta.getName(), S) == 0) {
 			S.addNolabs(ta);
-			return -50;		
+			return -50;
+		}
 		return 0;
 	}
 	
@@ -1129,6 +1130,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			if (solution.getValue().equals(ta) 
 					&& e_prefers1(ta.getName(), solution.getKey().getLecture().getCourse().getName()))
 					return 0;
+		S.addPref1(ta);
 		return -5;
 	}
 	
@@ -1138,6 +1140,8 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		for (Pair<Lab, TA> solution : S.getSolution())
 			if (solution.getValue().equals(ta) && (!e_prefers1(ta.getName(), solution.getKey().getLecture().getCourse().getName()) || !e_prefers2(ta.getName(), solution.getKey().getLecture().getCourse().getName())))
 				return 0;
+		S.addPref1(ta);
+		S.addPref2(ta);
 		return -10;
 	}
 	
@@ -1150,6 +1154,9 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 					|| !e_prefers2(ta.getName(), solution.getKey().getLecture().getCourse().getName())
 					|| !e_prefers3(ta.getName(), solution.getKey().getLecture().getCourse().getName())))
 				return 0;
+		S.addPref1(ta);
+		S.addPref2(ta);
+		S.addPref3(ta);
 		return -10;
 	}
 	
@@ -1294,7 +1301,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			// loop, 
 		}
 		// if ta doesn't know a lab they teach, give it to someone that does know
-		else if (s.getDoesntKnow().isEmpty()) {
+		else if (!s.getDoesntKnow().isEmpty()) {
 			int i = 0;
 			int randomPair;
 			int randomTaker;
@@ -1319,12 +1326,17 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 						return new Solution();
 					}
 					clone.giveLab(pair.getValue(), taker, pair.getKey());
-					if (checkHardConstraints(s))
+					if (checkHardConstraints(s)) {
 						return s;
+					}
 					else
 						s.giveLab(taker, pair.getValue(), pair.getKey());
 				}
 			} while (i < taList.size());
+		}
+		else if (!s.getPref1().isEmpty()) {
+			
+			return new Solution();
 		}
 		return new Solution();
 	}

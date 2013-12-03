@@ -12,6 +12,11 @@ public class Solution implements Cloneable {
 	// holds TAs with more than MIN_LABS
 	private Vector<Pair<TA, Integer>> moreThanMinLabs = new Vector<Pair<TA, Integer>>();
 	
+	// holds TAs who don't have their first, second, or third preferred courses
+	private Vector<TA> noPref1 = new Vector<TA>();
+	private Vector<TA> noPref2 = new Vector<TA>();
+	private Vector<TA> noPref3 = new Vector<TA>();
+	
 	// holds TA lab pairs where the TA doesn't know the material for the lab
 	private Vector<Pair<Lab, TA>> doesntKnowLab = new Vector<Pair<Lab, TA>>();
 	
@@ -30,8 +35,8 @@ public class Solution implements Cloneable {
 		return noLabs;
 	}
 	
-	public void addMTML(TA ta) {
-		moreThanMinLabs.add(ta);
+	public void addMTML(TA ta, int num) {
+		moreThanMinLabs.add(new Pair<TA, Integer>(ta, num));
 	}
 	
 	public Vector<Pair<TA, Integer>> getMTML() {
@@ -47,6 +52,32 @@ public class Solution implements Cloneable {
 		return noLabs;
 	}
 	
+	public void addPref1(TA ta) {
+		if (!noPref1.contains(ta))
+			noPref1.add(ta);
+	}
+	
+	public Vector<TA> getPref1() {
+		return noPref1;
+	}
+	
+	public void addPref2(TA ta) {
+		if (!noPref2.contains(ta))
+			noPref2.add(ta);
+	}
+	
+	public Vector<TA> getPref2() {
+		return noPref2;
+	}
+	
+	public void addPref3(TA ta) {
+		if (!noPref3.contains(ta))
+			noPref3.add(ta);
+	}
+	
+	public Vector<TA> getPref3() {
+		return noPref3;
+	}
 	
 	// adds a pair to doesntKnowLab
 	public void addDoesntKnow(Pair<Lab, TA> pair) {
