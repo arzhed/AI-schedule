@@ -1083,10 +1083,10 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
                 return false;
             }
 			
-			Vector<Lab> labList = labListPerTA(ta.getName(), S);
+			Vector<Lab> labListTA = labListPerTA(ta.getName(), S);
 			
-			for (Lab l : labList )
-				for (Lab l2 : labList )
+			for (Lab l : labListTA )
+				for (Lab l2 : labListTA )
 					//no TA is assigned simultaneous labs
                     if ( (!l2.equals(l)
                     		|| ! l2.getLecture().equals(l.getLecture())
@@ -1097,7 +1097,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
                     }
 			
 			for (Lecture L : ta.getTaking())
-				for (Lab l : labList )
+				for (Lab l : labListTA )
 					//no TA is assigned a lab that conflicts with his/her own courses
                     if (e_conflicts(l.getTime().getName(), L.getTime().getName())){
                         System.out.println("one or more TA is assigned a lab that conflicts with his/her own courses");
@@ -1152,12 +1152,13 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	public int checkSC3(TA ta,Solution S)
 	{
 		// TAs should get their first or second or third choice course 
-		for (Pair<Lab, TA> solution : S.getSolution())
-			if (solution.getValue().equals(ta) 
+		for (Pair<Lab, TA> solution : S.getSolution()) {
+			if (solution.getValue().equals(ta)
 					&& (!e_prefers1(ta.getName(), solution.getKey().getLecture().getCourse().getName())
 					|| !e_prefers2(ta.getName(), solution.getKey().getLecture().getCourse().getName())
 					|| !e_prefers3(ta.getName(), solution.getKey().getLecture().getCourse().getName())))
 				return 0;
+		}
 		S.addPref1(ta);
 		S.addPref2(ta);
 		S.addPref3(ta);
@@ -1296,16 +1297,28 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	
 	public Solution mutate(Solution s) {
 		// if there is a ta with no labs, give them a lab from another ta
-		Solution s1 = s;
+		try {
+			Solution clone = (Solution) s.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		Vector<TA> noLabs = s.checkNoLabs();
 		if (!noLabs.isEmpty()) {
 			// sort taList by the number of labs each ta has
+			int randomTA;
+			int randomGiver;
+			int numLabsGiven;
+			for (int i = 0; i < 5; i++) {
+				
+			
+			
 			
 			
 			// loop, 
 		}
 		// if ta doesn't know a lab they teach, give it to someone that does know
-		else if (!s.getDoesntKnow().isEmpty()) {
+		if (!s.getDoesntKnow().isEmpty()) {
 			int i = 0;
 			int randomPair;
 			int randomTaker;
