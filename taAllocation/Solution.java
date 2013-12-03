@@ -30,38 +30,23 @@ public class Solution implements Cloneable {
 		return noLabs;
 	}
 	
-	
-	public void makeNoLabs(Vector<TA> ta) {
-		boolean elem;
-		for (TA t : ta) {
-			elem = false;
-			for (Pair<Lab, TA> pair : solution) {
-				if (t.equals(pair.getValue())) {
-					elem = true;
-					break;
-				}
-			}
-			if (!elem) {
-				noLabs.add(t);
-			}
-		}
+	public void addMTML(TA ta) {
+		moreThanMinLabs.add(ta);
 	}
 	
-	
-	public void makeMTML(Vector<TA> ta, int min_labs) {
-		int numGive;
-		for (TA t : ta) {
-			numGive = 0;
-			for (Pair<Lab, TA> pair : solution) {
-				if (t.equals(pair.getValue())) {
-					numGive++;
-				}
-			}
-			if (numGive > min_labs) {
-				moreThanMinLabs.add(new Pair<TA, Integer>(t, (numGive - min_labs)));
-			}
-		}
+	public Vector<Pair<TA, Integer>> getMTML() {
+		return moreThanMinLabs;
 	}
+	
+	// adds a pair to doesntKnowLab
+	public void addNolabs(TA ta) {
+		noLabs.add(ta);
+	}
+		
+	public Vector<TA> getNoLabs() {
+		return noLabs;
+	}
+	
 	
 	// adds a pair to doesntKnowLab
 	public void addDoesntKnow(Pair<Lab, TA> pair) {

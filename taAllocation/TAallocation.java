@@ -1117,7 +1117,8 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	{
 		// Each TA should be funded (that is, they should teach at least one course)
 		if (labCount(ta.getName(), S) == 0)
-				return -50;		
+			S.addNolabs(ta);
+			return -50;		
 		return 0;
 	}
 	
@@ -1126,20 +1127,18 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		// TAs should get their first choice course
 		for (Pair<Lab, TA> solution : S.getSolution())
 			if (solution.getValue().equals(ta) 
-					&& !e_prefers1(ta.getName(), solution.getKey().getLecture().getCourse().getName()))
-					return -5;
-		return 0;
+					&& e_prefers1(ta.getName(), solution.getKey().getLecture().getCourse().getName()))
+					return 0;
+		return -5;
 	}
 	
 	public int checkSC2(TA ta,Solution S)
 	{
 		// TAs should get their first or second choice course 
 		for (Pair<Lab, TA> solution : S.getSolution())
-			if (solution.getValue().equals(ta) 
-					&& !e_prefers1(ta.getName(), solution.getKey().getLecture().getCourse().getName())
-					&& !e_prefers2(ta.getName(), solution.getKey().getLecture().getCourse().getName()))
-				return -10;
-		return 0;
+			if (solution.getValue().equals(ta) && (!e_prefers1(ta.getName(), solution.getKey().getLecture().getCourse().getName()) || !e_prefers2(ta.getName(), solution.getKey().getLecture().getCourse().getName())))
+				return 0;
+		return -10;
 	}
 	
 	public int checkSC3(TA ta,Solution S)
@@ -1147,11 +1146,11 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		// TAs should get their first or second or third choice course 
 		for (Pair<Lab, TA> solution : S.getSolution())
 			if (solution.getValue().equals(ta) 
-					&& !e_prefers1(ta.getName(), solution.getKey().getLecture().getCourse().getName())
-					&& !e_prefers2(ta.getName(), solution.getKey().getLecture().getCourse().getName())
-					&& !e_prefers3(ta.getName(), solution.getKey().getLecture().getCourse().getName()))
-				return -10;
-		return 0;
+					&& (!e_prefers1(ta.getName(), solution.getKey().getLecture().getCourse().getName())
+					|| !e_prefers2(ta.getName(), solution.getKey().getLecture().getCourse().getName())
+					|| !e_prefers3(ta.getName(), solution.getKey().getLecture().getCourse().getName())))
+				return 0;
+		return -10;
 	}
 	
 	public int checkSC4(TA ta,Solution S)
@@ -1286,9 +1285,11 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	
 	public Solution mutate(Solution s) {
 		// if there is a ta with no labs, give them a lab from another ta
+		Solution s1 = s;
 		Vector<TA> noLabs = s.checkNoLabs();
 		if (!noLabs.isEmpty()) {
 			// sort taList by the number of labs each ta has
+			
 			
 			// loop, 
 		}
