@@ -34,6 +34,10 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	private static Long maxlabs = (long)3;
 	private static Long minlabs = (long)1;
 	
+	private static Long startTime = (long)0;
+	
+	private static Solution bestSolution;
+	
 
 	public void a_maxlabs(Long p) {
 		maxlabs = p;
@@ -763,7 +767,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
     }
 	
 	public static void main(String[] args) {
-		long startTime = System.currentTimeMillis();
+		startTime = System.currentTimeMillis();
 		try {
 			traceFile = new PrintStream(new FileOutputStream("trace.out"));
 			traceFile.print("Trace taAllocation.TAallocation");
@@ -803,11 +807,13 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	        
 	        // loop and mutate set until time runs out
 	        /*while ((System.currentTimeMillis() - startTime) < runtime) {
-	        	
+	        	TAa.mutate(S[0]);
+	        	System.out.println("Mutation took " + (System.currentTimeMillis() - startTime) + " milliseconds.");
 	        }*/
 			
+			bestSolution = S[0];
 			String outfilename = makeOutfilename(args[0]);
-			output(outfilename, env);
+			outputSolution(outfilename);
 		}
 	    else { // go into "command mode" if there's nothing on the command line
 	    	PredicateReader env = new TAallocation();
@@ -968,6 +974,34 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				out.println();
 			}
 			
+			out.close();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static void outputSolution(String fileName) {
+		int total = 0;
+		PrintWriter out;
+		try {
+			out = new PrintWriter(fileName);
+			
+			// prints instructs predicates from bestSolution
+			for (Pair<Lab, TA> pair : bestSolution.getSolution())
+				out.println("instructs(" + pair.getValue().getName() + ", " + pair.getKey().getLecture().getCourse().getName()
+						+ ", " + pair.getKey().getName() + ")");
+			
+			// prints length of search
+			out.println("//Search time: " + (System.currentTimeMillis() - startTime) + " milliseconds");
+			
+			// prints info on soft constraint violations
+			for (int i = 0; i <= 10; i++) {
+				total += bestSolution.SCV[i];
+				out.println("// " + i + " 	: " + (bestSolution.SCV[i]/bestSolution.SCVP[i])
+						+ " 	* " + bestSolution.SCVP[i] + " 	= " + bestSolution.SCV[i]);
+			}
+			out.println("//Total: " + total);
 			out.close();
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -1214,44 +1248,43 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	public int checkSoftConstraints(Solution S)
 	{
 		int penalty = 0;
-		int[] SCV = new int[11];
 		int leastNBLabs=100;
 		for (TA ta : taList)
 			if (labCount(ta.getName(), S)<leastNBLabs)
 				leastNBLabs=labCount(ta.getName(), S);
 		for (TA ta : taList)
 		{
-			SCV[0] += checkSC0(ta,S);
-			SCV[1] += checkSC1(ta,S);
-			SCV[2] += checkSC2(ta,S);
-			SCV[3] += checkSC3(ta,S);
-			SCV[4] += checkSC4(ta,S);
-			SCV[5] += checkSC5(ta,S);
-			SCV[6] += checkSC6(ta,S);
-			SCV[7] += checkSC7(ta,S);
-			SCV[8] += checkSC8(ta,S,leastNBLabs);
-			SCV[9] += checkSC9(ta,S,leastNBLabs);
-			SCV[10] += checkSC10(ta,S);
+			S.SCV[0] += checkSC0(ta,S);
+			S.SCV[1] += checkSC1(ta,S);
+			S.SCV[2] += checkSC2(ta,S);
+			S.SCV[3] += checkSC3(ta,S);
+			S.SCV[4] += checkSC4(ta,S);
+			S.SCV[5] += checkSC5(ta,S);
+			S.SCV[6] += checkSC6(ta,S);
+			S.SCV[7] += checkSC7(ta,S);
+			S.SCV[8] += checkSC8(ta,S,leastNBLabs);
+			S.SCV[9] += checkSC9(ta,S,leastNBLabs);
+			S.SCV[10] += checkSC10(ta,S);
 		}
-		System.out.println("SC0: " + (-SCV[0]/50));
-		System.out.println("SC1: " + (-SCV[1]/5));
-		System.out.println("SC2: " + (-SCV[2]/10));
-		System.out.println("SC3: " + (-SCV[3]/10));
-		System.out.println("SC4: " + (-SCV[4]/20));
-		System.out.println("SC5: " + (-SCV[5]/35));
-		System.out.println("SC6: " + (-SCV[6]/30));
-		System.out.println("SC7: " + (-SCV[7]/10));
-		System.out.println("SC8: " + (-SCV[8]/25));
-		System.out.println("SC9: " + (-SCV[9]/5));
-		System.out.println("SC10: " + (-SCV[10]/10));
+		System.out.println("SC0: " + (-S.SCV[0]/50));
+		System.out.println("SC1: " + (-S.SCV[1]/5));
+		System.out.println("SC2: " + (-S.SCV[2]/10));
+		System.out.println("SC3: " + (-S.SCV[3]/10));
+		System.out.println("SC4: " + (-S.SCV[4]/20));
+		System.out.println("SC5: " + (-S.SCV[5]/35));
+		System.out.println("SC6: " + (-S.SCV[6]/30));
+		System.out.println("SC7: " + (-S.SCV[7]/10));
+		System.out.println("SC8: " + (-S.SCV[8]/25));
+		System.out.println("SC9: " + (-S.SCV[9]/5));
+		System.out.println("SC10: " + (-S.SCV[10]/10));
 		System.out.println("Least number of labs: " + leastNBLabs);
-		for (int i : SCV) {
+		for (int i : S.SCV) {
 			penalty += i;
 		}
 		return penalty;
 	}
 	
-	public void mutate(Solution s) {
+	public Solution mutate(Solution s) {
 		// if there is a ta with no labs, give them a lab from another ta
 		Vector<TA> noLabs = s.checkNoLabs();
 		if (!noLabs.isEmpty()) {
@@ -1262,23 +1295,36 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		// if ta doesn't know a lab they teach, give it to someone that does know
 		else if (s.getDoesntKnow().isEmpty()) {
 			int i = 0;
-			int random;
+			int randomPair;
+			int randomTaker;
+			Pair<Lab, TA> pair;
 			TA taker;
-			for (Pair<Lab, TA> pair : s.getDoesntKnow()) {
-				do {
-					i++;
-					random = (int) (Math.random() * taList.size());
-					taker = taList.get(random);
-					// if the taker has less than maxlabs and knows the material try giving it to him
-					if (labCount(taker.getName(), s) < maxlabs && taker.getKnows().contains(pair.getKey().getLecture().getCourse())) {
-						s.giveLab(pair.getValue(), taker, pair.getKey());
-						if (checkHardConstraints(s))
-							return;
-						else
-							s.giveLab(taker, pair.getValue(), pair.getKey());
+			Solution clone = new Solution();
+			
+			// choose a random Lab TA pair 
+			randomPair = (int) (Math.random() * s.getDoesntKnow().size());
+			pair = s.getDoesntKnow().get(randomPair);
+			do {
+				i++;
+				randomTaker = (int) (Math.random() * taList.size());
+				taker = taList.get(randomTaker);
+				// if the taker has less than maxlabs and knows the material try giving it to him
+				if (labCount(taker.getName(), s) < maxlabs && taker.getKnows().contains(pair.getKey().getLecture().getCourse())) {
+					try {
+						clone = (Solution) s.clone();
+					} catch (CloneNotSupportedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						return new Solution();
 					}
-				} while (i < taList.size());
-			}
+					clone.giveLab(pair.getValue(), taker, pair.getKey());
+					if (checkHardConstraints(s))
+						return s;
+					else
+						s.giveLab(taker, pair.getValue(), pair.getKey());
+				}
+			} while (i < taList.size());
 		}
+		return new Solution();
 	}
 }
