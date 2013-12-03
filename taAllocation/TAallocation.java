@@ -1310,33 +1310,70 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			Solution clone = new Solution();
 			
 			// choose a random Lab TA pair 
-			randomPair = (int) (Math.random() * s.getDoesntKnow().size());
-			pair = s.getDoesntKnow().get(randomPair);
-			do {
-				i++;
-				randomTaker = (int) (Math.random() * taList.size());
-				taker = taList.get(randomTaker);
-				// if the taker has less than maxlabs and knows the material try giving it to him
-				if (labCount(taker.getName(), s) < maxlabs && taker.getKnows().contains(pair.getKey().getLecture().getCourse())) {
-					try {
-						clone = (Solution) s.clone();
-					} catch (CloneNotSupportedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+			for (int j = 0; j < 5; j++) {
+				int c = 0;
+				do {
+					if (c >= 25)
 						return new Solution();
+					randomPair = (int) (Math.random() * s.getDoesntKnow().size());
+					pair = s.getDoesntKnow().get(randomPair);
+					c++;
+				} while (labCount(pair.getValue().getName(), s) <= minlabs);
+				do {
+					i++;
+					randomTaker = (int) (Math.random() * taList.size());
+					taker = taList.get(randomTaker);
+					// if the taker has less than maxlabs and knows the material try giving it to him
+					if (labCount(taker.getName(), s) < maxlabs && taker.getKnows().contains(pair.getKey().getLecture().getCourse())) {
+						try {
+							clone = (Solution) s.clone();
+						} catch (CloneNotSupportedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							return new Solution();
+						}
+						clone.giveLab(pair.getValue(), taker, pair.getKey());
+						if (checkHardConstraints(clone)) {
+							return clone;
+						}
 					}
-					clone.giveLab(pair.getValue(), taker, pair.getKey());
-					if (checkHardConstraints(s)) {
-						return s;
-					}
-					else
-						s.giveLab(taker, pair.getValue(), pair.getKey());
-				}
-			} while (i < taList.size());
+				} while (i < taList.size());
+			}
 		}
-		else if (!s.getPref1().isEmpty()) {
-			
-			return new Solution();
+		// try giving a ta their first, second, or third preference course if they don't have it
+		else if (!s.getPref3().isEmpty()) {
+			int max;
+			int random;
+			TA ta;
+			Pair <Lab, TA> pair;
+			Course course;
+			Solution clone = new Solution();
+			for (int i = 0; i < 5; i++) {
+				// pick a random ta with no preference course
+				random = (int) (Math.random() * s.getPref3().size());
+				ta = s.getPref3().get(random);
+				
+				// get random lab ta pair, take lab if preferred
+				do {
+					random = (int) (Math.random() * s.getSolution().size());
+					pair = s.getSolution().elementAt(random);
+					course = pair.getKey().getLecture().getCourse();
+					if ((course == ta.getPrefer(1) || course == ta.getPrefer(2) || course == ta.getPrefer(3))
+							&& labCount(s.getSolution().elementAt(random).getValue().getName(), s) > maxlabs) {
+						try {
+							clone = (Solution) s.clone();
+						} catch (CloneNotSupportedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							return new Solution();
+						}
+						clone.giveLab(pair.getValue(), ta, pair.getKey());
+						if (checkHardConstraints(clone)) {
+							return clone;
+						}
+					}
+				} while (i < s.getSolution().size());
+			}
 		}
 		return new Solution();
 	}
