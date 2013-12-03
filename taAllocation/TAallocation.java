@@ -1220,6 +1220,19 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return (CourseList.size() - 1) * -10;
 	}
 	
+	public int checkSC6(TA ta,Solution S)
+	{
+		int total = 0;
+		// TAs should not teach a lab for a course for which they don't know the subject matter
+		Vector<Lab> labList = labListPerTA(ta.getName(),S);
+		for (Lab l : labList)
+			if (!e_knows(ta.getName(),l.getLecture().getCourse().getName())) {
+					S.addDoesntKnow(new Pair<Lab, TA>(l, ta));
+					total -= 30;
+			}
+		return total;
+	}
+	
 	public int checkSC7(TA ta,Solution S)
 	{
 		// TAs should not teach two labs of distinct courses at the senior level
@@ -1327,8 +1340,9 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	public Solution mutate(Solution s) {
+		Solution clone = new Solution();
 		// if there is a ta with no labs, give them a lab from another ta
-		if (!s.checkNoLabs.isEmpty()) {
+		if (!s.checkNoLabs().isEmpty()) {
 			// sort taList by the number of labs each ta has
 			int randomTA;
 			int randomGiver;
@@ -1336,20 +1350,16 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			for (int i = 0; i < 5; i++) {
 				numLabsGiven = 0;
 				try {
-					Solution clone = (Solution) s.clone();
+					clone = (Solution) s.clone();
 				} catch (CloneNotSupportedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				Vector<TA> noLabs = clone.checkNoLabs();
-				randomTA = (int) (Math.random() * clone.checkNoLabs().size())
+				randomTA = (int) (Math.random() * clone.checkNoLabs().size());
 				TA ta = noLabs.get(randomTA);
-				do {
-					
-			
-			
-			
 			// loop, 
+			}
 		}
 		// if ta doesn't know a lab they teach, give it to someone that does know
 		if (!s.getDoesntKnow().isEmpty()) {
@@ -1358,7 +1368,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			int randomTaker;
 			Pair<Lab, TA> pair;
 			TA taker;
-			Solution clone = new Solution();
+			clone = new Solution();
 			
 			// choose a random Lab TA pair 
 			for (int j = 0; j < 5; j++) {
@@ -1392,13 +1402,13 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			}
 		}
 		// try giving a ta their first, second, or third preference course if they don't have it
-		else if (!s.getPref3().isEmpty()) {
+		if (!s.getPref3().isEmpty()) {
 			int max;
 			int random;
 			TA ta;
 			Pair <Lab, TA> pair;
 			Course course;
-			Solution clone = new Solution();
+			clone = new Solution();
 			for (int i = 0; i < 5; i++) {
 				// pick a random ta with no preference course
 				random = (int) (Math.random() * s.getPref3().size());
