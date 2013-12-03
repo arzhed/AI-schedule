@@ -317,7 +317,11 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
         if (!e_instructs(p,c,l)){
             for (int i=0;i<instructorList.size();i++) {
                 if (p.equals(instructorList.elementAt(i).getName())){
-                    instructorList.elementAt(i).getInstructList().add(new Pair<Course, Lecture>(new Course(c), new Lecture(l)));
+                   for (Course C : courseList)
+                		if (C.getName().equals(c))
+                			for (Lecture L : C.getLectures())
+                				if (L.getName().equals(l))
+                					instructorList.elementAt(i).getInstructList().add(new Pair<Course,Lecture>(C,L));
                 }
             }
         }
