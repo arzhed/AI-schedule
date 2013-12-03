@@ -105,6 +105,14 @@ public class Solution implements Cloneable {
 		numGive--;
 		if (numGive > 0)
 			moreThanMinLabs.add(i, new Pair<TA, Integer>(giver, numGive));
+			
+		doesntKnowLab.remove(new Pair<Lab, TA>(lab, giver));
+		for (Course c : taker.getKnows()) {
+			if (c.equals(lab.getLecture().getCourse())) {
+				return;
+			}
+		}
+		doesntKnowLab.add(new Pair<Lab, TA>(lab, giver));
 	}
 	
 	public void swapLabs(TA ta1, TA ta2, Lab lab1, Lab lab2) {
