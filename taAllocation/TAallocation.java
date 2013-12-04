@@ -1672,6 +1672,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			clone.swapLabs(pair1.getValue(), pair2.getValue(), pair1.getKey(), pair2.getKey());
 			if (checkHardConstraints(clone)) {
 				//System.out.println("Success D");
+				clone.wipe();
 				return clone;
 			}
 		}
