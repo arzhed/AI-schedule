@@ -12,6 +12,7 @@ public class Solution implements Comparable<Solution> {
 	
 	// holds TAs with more than MIN_LABS
 	private Vector<Pair<TA, Integer>> moreThanMinLabs = new Vector<Pair<TA, Integer>>();
+	private Vector<Pair<TA, Integer>> atLeastMinLabs = new Vector<Pair<TA, Integer>>();
 	
 	// holds TAs who don't have their first, second, or third preferred courses
 	private Vector<TA> noPref1 = new Vector<TA>();
@@ -163,14 +164,21 @@ public class Solution implements Comparable<Solution> {
 			}
 			i++;
 		}
-
-		doesntKnowLab.remove(new Pair<Lab, TA>(lab, giver));
+		i = 0;
+		for (Pair<Lab, TA> pair : doesntKnowLab) {
+			if (pair.getKey().equals(lab) && pair.getValue().equals(giver)) {
+				doesntKnowLab.remove(i);
+				break;
+			}
+			i++;
+		}
+			
 		for (Course c : taker.getKnows()) {
 			if (c.equals(lab.getLecture().getCourse())) {
 				return;
 			}
 		}
-		doesntKnowLab.add(new Pair<Lab, TA>(lab, giver));
+		doesntKnowLab.add(new Pair<Lab, TA>(lab, taker));
 	}
 	
 	public void swapLabs(TA ta1, TA ta2, Lab lab1, Lab lab2) {
