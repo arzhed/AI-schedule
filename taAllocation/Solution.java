@@ -74,15 +74,23 @@ public class Solution implements Comparable<Solution> {
 	}
 	
 	public void addMTML(TA ta, int num) {
-		Pair<TA, Integer> pair = new Pair<TA, Integer>(ta, num);
-		if (!moreThanMinLabs.contains(pair))
-			moreThanMinLabs.add(pair);
+		for (Pair<TA, Integer> pair : moreThanMinLabs) {
+			if (pair.getKey().equals(ta)) {
+				return;
+			}
+		}
+		moreThanMinLabs.add(new Pair<TA, Integer>(ta, num));
 	}
 	
 	public Vector<Pair<TA, Integer>> getMTML() {
 		return moreThanMinLabs;
 	}
 	
+	/*
+	public void addALML(TA ta, int num) {
+		Pair<TA, Integer> pair = new Pair<TA, Integer>(ta, num);
+		if (!atLeastMinLabs.contains(pair))
+	*/
 	public void addNolabs(TA ta) {
 		if (!noLabs.contains(ta))
 			noLabs.add(ta);
@@ -120,8 +128,12 @@ public class Solution implements Comparable<Solution> {
 	}
 	
 	public void addManyCourses(Vector<Lab> labList, TA ta) {
-		if (!moreThan2Courses.contains(ta))
-			moreThan2Courses.add(new Pair<Vector<Lab>, TA>(labList, ta));
+		for (Pair<Vector<Lab>, TA> pair : moreThan2Courses) {
+			if (pair.getValue().equals(ta)) {
+				return;
+			}
+		}
+		moreThan2Courses.add(new Pair<Vector<Lab>, TA>(labList, ta));
 	}
 	
 	public Vector<Pair<Vector<Lab>, TA>> getManyCourses() {
@@ -208,11 +220,7 @@ public class Solution implements Comparable<Solution> {
 		solution.add(pair2);
 	}
 	
-	// clones the instance of this class that calls this method
-	protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
-
+	
 	@Override
 	public int compareTo(Solution o) {
 		return this.total - o.total;
