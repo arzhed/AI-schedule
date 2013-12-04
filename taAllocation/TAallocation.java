@@ -1262,8 +1262,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			return 0;
 		}
 		S.addManyCourses(labList, ta);
-		return -35;
-		//return (CourseList.size() - 1) * -10;
+		return (CourseList.size() - 1) * -35;
 	}
 	
 	public int checkSC6(TA ta,Solution S)
