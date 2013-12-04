@@ -1648,6 +1648,11 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return new Solution();
 	}
 	
+	
+	//private Solution makeGiveToFewerLabs(Solution s) {
+		
+	
+	
 	private Solution makeRandomChange(Solution s) {
 		Solution clone;
 		int random;
