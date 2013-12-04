@@ -834,6 +834,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	        	
 	        	// set best solution
 	        	bestSolution = tempSet.get(0);
+	        	System.out.println("Best solution penalty = " + bestSolution.total);
 	        	
 	        	// check if best solution is significantly better, output it if so
 	        	if (tempSet.get(0).total - 10 > bestSolution.total) {
@@ -1347,6 +1348,8 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		for (TA ta : taList)
 			if (labCount(ta.getName(), S)<leastNBLabs)
 				leastNBLabs=labCount(ta.getName(), S);
+		for (int j = 0; j < 11; j++)
+			S.SCV[j] = 0;
 		for (TA ta : taList)
 		{
 			S.SCV[0] += checkSC0(ta,S);
@@ -1384,6 +1387,8 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	public Solution mutate(Solution s) {
 		Solution newSol;
 		int random;
+		if (s.getSolution().size() == 1)
+			return s;
 		while (true) {
 			random = (int) (Math.random() * 4);
 			System.out.println(random);
