@@ -56,6 +56,10 @@ public class Solution implements Comparable<Solution> {
 		}
 	}
 	
+	public Solution () {
+	
+	}
+	
 	
 	public void addElement (Pair<Lab, TA> elem) {
 		solution.add(elem);

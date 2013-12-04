@@ -1444,18 +1444,13 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	// if there is a ta with no labs, give them a lab from another ta
 	private Solution makeGiveToNoLabs(Solution s) {
 		// sort taList by the number of labs each ta has
-		Solution clone = new Solution();
+		Solution clone;
 		int randomTA;
 		int randomGiver;
 		int numLabsGiven;
 		for (int i = 0; i < 5; i++) {
 			numLabsGiven = 0;
-			try {
-				clone = (Solution) s.clone();
-			} catch (CloneNotSupportedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			clone = new Solution(s);
 			Vector<TA> noLabs = clone.checkNoLabs();
 			randomTA = (int) (Math.random() * clone.checkNoLabs().size());
 			TA ta = noLabs.get(randomTA);
@@ -1468,15 +1463,8 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				randomLab = (int) (Math.random() * labListPerTA(giver.getName(), s).size());
 				lab = labListPerTA(giver.getName(), s).get(randomLab);
 				Solution clone2 = new Solution();
-				try {
-					clone2 = (Solution) clone.clone();
-				} catch (CloneNotSupportedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				System.out.println("MTML size1: " + s.getMTML().size());
+				clone2 = new Solution(clone);
 				clone2.giveLab(giver, ta, lab);
-				System.out.println("MTML size2: " + s.getMTML().size());
 				if (checkHC5(clone2, ta) && (checkHC6(clone2, ta))) {
 					clone.giveLab(giver, ta, lab);
 					numLabsGiven++;
@@ -1496,7 +1484,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	
 	// if ta doesn't know a lab they teach, give it to someone that does know
 	private Solution makeRemoveUnknownCourse(Solution s) {
-		Solution clone = new Solution();
+		Solution clone;
 		int i = 0;
 		int randomPair;
 		int randomTaker;
@@ -1520,13 +1508,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				taker = taList.get(randomTaker);
 				// if the taker has less than maxlabs and knows the material try giving it to him
 				if (labCount(taker.getName(), s) < maxlabs && taker.getKnows().contains(pair.getKey().getLecture().getCourse())) {
-					try {
-						clone = (Solution) s.clone();
-					} catch (CloneNotSupportedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						return new Solution();
-					}
+					clone = new Solution(s);
 					clone.giveLab(pair.getValue(), taker, pair.getKey());
 					if (checkHardConstraints(clone)) {
 						return clone;
@@ -1539,13 +1521,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	
 	// try giving a ta their first, second, or third preference course if they don't have it
 	private Solution makeGetPreferenceCourse(Solution s) {
-		Solution clone = new Solution();
+		Solution clone;
 		int max;
 		int random;
 		TA ta;
 		Pair <Lab, TA> pair = new Pair<Lab, TA>(null, null);
 		Course course;
-		clone = new Solution();
 		for (int j = 0; j < 5; j++) {
 			// pick a random ta with no preference course, with more than minlabs
 			int c = 0;
@@ -1565,13 +1546,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				course = pair.getKey().getLecture().getCourse();
 				if (course == ta.getPrefer(1) || course == ta.getPrefer(2) || course == ta.getPrefer(3)) {
 					// make a clone of the current solution
-					try {
-						clone = (Solution) s.clone();
-					} catch (CloneNotSupportedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						return new Solution();
-					}
+					clone = new Solution(s);
 					// if the ta has a lab it can give without hitting minlabs, give it
 					if (labCount(s.getSolution().elementAt(random).getValue().getName(), s) > minlabs &&
 							labCount(ta.getName(), s) < maxlabs) {
@@ -1594,7 +1569,6 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		TA taker;
 		Pair <Lab, TA> pair = new Pair<Lab, TA>(null, null);
 		Vector<Lab> labList;
-		clone = new Solution();
 		for (int j = 0; j < 5; j++) {
 			// pick a random ta with more than 2 courses and more than minlabs
 			int c = 0;
@@ -1637,13 +1611,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				taker = taList.get(random);
 				
 				if (labCount(taker.getName(), s) < maxlabs) {
-					try {
-						clone = (Solution) s.clone();
-					} catch (CloneNotSupportedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						return new Solution();
-					}
+					clone = new Solution(s);
 					random = (int) (Math.random() * lowest.getValue().size());
 					clone.giveLab(ta, taker, lowest.getValue().get(random));
 					if (checkHardConstraints(clone)) {
@@ -1656,7 +1624,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	private Solution makeRandomChange(Solution s) {
-		Solution clone = new Solution();
+		Solution clone;
 		int random;
 		Pair<Lab, TA> pair1;
 		Pair<Lab, TA> pair2;
@@ -1668,13 +1636,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			random = (int) (Math.random() * s.getSolution().size());
 			pair2 = s.getSolution().get(random);
 			
-			try {
-				clone = (Solution) s.clone();
-			} catch (CloneNotSupportedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return s;
-			}
+			clone = new Solution(s);
 			
 			// swap labs, then test against hard constraints
 			clone.swapLabs(pair1.getValue(), pair2.getValue(), pair1.getKey(), pair2.getKey());
