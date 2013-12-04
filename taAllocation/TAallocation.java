@@ -1394,7 +1394,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				newSol = makeGiveToNoLabs(s);
 				break;
 			case 1:
-				if (!s.getDoesntKnow().isEmpty())
+				if (s.getDoesntKnow().isEmpty())
 					continue;
 				newSol = makeRemoveUnknownCourse(s);
 				break;
