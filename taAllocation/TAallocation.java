@@ -1460,7 +1460,6 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		for (int i = 0; i < 5; i++) {
 			numLabsGiven = 0;
 			clone = new Solution(s);
-			System.out.println("Meh");
 			Vector<TA> noLabs = clone.checkNoLabs();
 			randomTA = (int) (Math.random() * clone.checkNoLabs().size());
 			TA ta = noLabs.get(randomTA);
