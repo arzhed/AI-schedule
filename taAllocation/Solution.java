@@ -141,12 +141,11 @@ public class Solution implements Comparable<Solution> {
 	public void giveLab(TA giver, TA taker, Lab lab) {
 		Pair<Lab, TA> oldPair = new Pair<Lab, TA>(lab, giver);
 		int j = 0;
-		for (Pair<Lab, TA> pair : solution) {
+		for (Iterator<Pair<Lab, TA>> it = solution.iterator(); it.hasNext();) {
+			Pair<Lab, TA> pair = it.next();
 			if (oldPair.equals(pair)) {
-				Pair <Lab, TA> k = solution.remove(j);
-				if (k == null)
-					System.out.println("givelab not working");
-				return;
+				it.remove();
+				break;
 			}
 			j++;
 		}

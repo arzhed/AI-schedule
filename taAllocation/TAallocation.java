@@ -24,7 +24,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	 */
 	static final int	DEFAULT_MAX_TIME = 30000;
 	private static final int	NUM_SOLUTIONS = 20;
-	private static final int STOP_TIME = 250;
+	private static final int STOP_TIME = 500;
 	
 	private static Vector<TA> taList = new Vector<TA>();
 	private static Vector<Instructor> instructorList = new Vector<Instructor>();
@@ -809,12 +809,17 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				System.out.println("HC OK for " + i);
 				System.out.println("SC Score for " + i + ": " + TAa.checkSoftConstraints(S[i]));
 			}
+			bestSolution = S[0];
 			
 			String outfilename = makeOutfilename(args[0]);
 			
 			Vector<Solution> tempSet;
 	        // loop and mutate set until time runs out
 	        while ((System.currentTimeMillis() - startTime) < runtime) {
+	        	// check if time to stop and output final solution
+	        	if ((System.currentTimeMillis() - startTime) > runtime - STOP_TIME)
+	        		break;
+	        	
 	        	// mutate all solutions
 	        	tempSet = new Vector<Solution>();
 	        	long startMutate = System.currentTimeMillis();
@@ -827,22 +832,18 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	        	}
 	        	System.out.println("Mutation took " + (System.currentTimeMillis() - startMutate) + " milliseconds.");
 	        	
-	        	// check if time to stop and output final solution
-	        	if ((System.currentTimeMillis() - startTime) > runtime - STOP_TIME)
-	        		break;
-	        	
 	        	// sort the solutions, with lowest penalty at index 0
 	        	Collections.sort(tempSet, Collections.reverseOrder());
-	        	
-	        	// set best solution
-	        	bestSolution = tempSet.get(0);
-	        	System.out.println("Best solution penalty = " + bestSolution.total);
-	        	System.out.println("Worst solution penalty = " + tempSet.get(tempSet.size() - 1).total);
 	        	
 	        	// check if best solution is significantly better, output it if so
 	        	if (tempSet.get(0).total - 10 > bestSolution.total) {
 	        		outputSolution(outfilename);
 	        	}
+	        	
+	        	// set best solution
+	        	bestSolution = tempSet.get(0);
+	        	System.out.println("Best solution penalty = " + bestSolution.total);
+	        	System.out.println("Worst solution penalty = " + tempSet.get(tempSet.size() - 1).total);
 	        	
 	        	// select 75% of set from best solutions, and 25% randomly from the remainder
 	        	int numBest = (int)Math.ceil(NUM_SOLUTIONS * 0.75);
@@ -1199,7 +1200,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	{
 		// TAs should get their first or second choice course 
 		for (Pair<Lab, TA> solution : S.getSolution())
-			if (solution.getValue().equals(ta) && (!e_prefers1(ta.getName(), solution.getKey().getLecture().getCourse().getName()) || !e_prefers2(ta.getName(), solution.getKey().getLecture().getCourse().getName())))
+			if (solution.getValue().equals(ta) && (e_prefers1(ta.getName(), solution.getKey().getLecture().getCourse().getName()) || e_prefers2(ta.getName(), solution.getKey().getLecture().getCourse().getName())))
 				return 0;
 		S.addPref1(ta);
 		S.addPref2(ta);
@@ -1211,9 +1212,9 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		// TAs should get their first or second or third choice course 
 		for (Pair<Lab, TA> solution : S.getSolution()) {
 			if (solution.getValue().equals(ta)
-					&& (!e_prefers1(ta.getName(), solution.getKey().getLecture().getCourse().getName())
-					|| !e_prefers2(ta.getName(), solution.getKey().getLecture().getCourse().getName())
-					|| !e_prefers3(ta.getName(), solution.getKey().getLecture().getCourse().getName())))
+					&& (e_prefers1(ta.getName(), solution.getKey().getLecture().getCourse().getName())
+					|| e_prefers2(ta.getName(), solution.getKey().getLecture().getCourse().getName())
+					|| e_prefers3(ta.getName(), solution.getKey().getLecture().getCourse().getName())))
 				return 0;
 		}
 		S.addPref1(ta);
@@ -1261,7 +1262,8 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			return 0;
 		}
 		S.addManyCourses(labList, ta);
-		return (CourseList.size() - 1) * -10;
+		return -35;
+		//return (CourseList.size() - 1) * -10;
 	}
 	
 	public int checkSC6(TA ta,Solution S)
@@ -1481,14 +1483,15 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 					clone.giveLab(giver, ta, lab);
 					numLabsGiven++;
 				}
-				//System.out.println(c);
+				System.out.println(c);
 				c++;
 			} while ((numLabsGiven < minlabs) && (c < 20));
 			if ((numLabsGiven == minlabs) && checkHardConstraints(clone)) {
-				System.out.println("Mutate 1 worked!!!");
+				System.out.println(numLabsGiven == minlabs);
+				System.out.println("Success 0");
 				return clone;
 			}
-			//System.out.println("i = " + i);
+			System.out.println("i = " + i);
 		}
 		return new Solution();
 	}
@@ -1514,7 +1517,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				c++;
 			} while (labCount(pair.getValue().getName(), s) <= minlabs);
 			do {
-				System.out.println("Here 1, " + i);
+				//System.out.println("Here 1, " + i);
 				i++;
 				randomTaker = (int) (Math.random() * taList.size());
 				taker = taList.get(randomTaker);
@@ -1523,6 +1526,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 					clone = new Solution(s);
 					clone.giveLab(pair.getValue(), taker, pair.getKey());
 					if (checkHardConstraints(clone)) {
+						System.out.println("Success 1");
 						return clone;
 					}
 				}
@@ -1552,7 +1556,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			int i = 0;
 			// get random lab ta pair, take lab if preferred
 			do {
-				System.out.println("Here 2, " + i);
+				//System.out.println("Here 2, " + i);
 				i++;
 				random = (int) (Math.random() * s.getSolution().size());
 				pair = s.getSolution().get(random);
@@ -1565,6 +1569,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 							labCount(ta.getName(), s) < maxlabs) {
 						clone.giveLab(pair.getValue(), ta, pair.getKey());
 						if (checkHardConstraints(clone)) {
+							System.out.println("Success 2");
 							return clone;
 						}
 					}
@@ -1629,6 +1634,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 					random = (int) (Math.random() * lowest.getValue().size());
 					clone.giveLab(ta, taker, lowest.getValue().get(random));
 					if (checkHardConstraints(clone)) {
+						System.out.println("Success 3");
 						return clone;
 					}
 				}
@@ -1657,6 +1663,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			// swap labs, then test against hard constraints
 			clone.swapLabs(pair1.getValue(), pair2.getValue(), pair1.getKey(), pair2.getKey());
 			if (checkHardConstraints(clone)) {
+				System.out.println("Success D");
 				return clone;
 			}
 		}
