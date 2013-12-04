@@ -1109,7 +1109,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			for (Lab l2 : labListTA ) {
 				//no TA is assigned simultaneous labs
 				if ( (!l2.equals(l) || ! l2.getLecture().equals(l.getLecture()) || ! l2.getLecture().getCourse().equals(l.getLecture().getCourse())) && e_conflicts(l.getTime().getName(), l2.getTime().getName())) {
-                    System.out.println("one or more TA is assigned simultaneous labs");
+                    //System.out.println("one or more TA is assigned simultaneous labs");
                     return false;
                 }
 			}
@@ -1124,7 +1124,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			for (Lab l : labListTA ) {
 				//no TA is assigned a lab that conflicts with his/her own courses
                 if (e_conflicts(l.getTime().getName(), L.getTime().getName())) {
-					System.out.println("one or more TA is assigned a lab that conflicts with his/her own courses");
+					//System.out.println("one or more TA is assigned a lab that conflicts with his/her own courses");
                     return false;
 				}
 			}
@@ -1146,7 +1146,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
             }
 			//every TA is assigned at least MIN_LABS labs (if the TA *has* a lab assignment)
 			if (labCOUNT!=0 && labCOUNT<minlabs) {
-                System.out.println("every TA is not assigned at least MIN_LABS labs (if the TA *has* a lab assignment)");
+                //System.out.println("every TA is not assigned at least MIN_LABS labs (if the TA *has* a lab assignment)");
                 return false;
             }
 			
@@ -1160,7 +1160,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
             // and
             // every lab has a TA assigned to it
             if (taCountPerLab(lab,S)!=1){
-                System.out.println("one or more lab has more than one TA assigned to it or not every lab has a TA assigned to it");
+                //System.out.println("one or more lab has more than one TA assigned to it or not every lab has a TA assigned to it");
                 return false;
             }
 		
