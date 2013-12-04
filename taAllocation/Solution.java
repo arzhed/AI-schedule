@@ -175,18 +175,18 @@ public class Solution implements Comparable<Solution> {
 	public void giveLab(TA giver, TA taker, Lab lab) {
 		
 		Pair<Lab, TA> oldPair = new Pair<Lab, TA>(lab, giver);
-		int j = 0;
+		int i = 0;
 		for (Iterator<Pair<Lab, TA>> it = solution.iterator(); it.hasNext();) {
 			Pair<Lab, TA> pair = it.next();
 			if (oldPair.equals(pair)) {
 				it.remove();
 				break;
 			}
-			j++;
+			i++;
 		}
 		solution.add(new Pair<Lab, TA>(lab, taker));
 		
-		int i = 0;
+		i = 0;
 		int numGive = 0;
 		for (Pair<Integer, TA> pair : moreThanMinLabs) {
 			if (pair.getKey().equals(giver)) {
@@ -216,7 +216,7 @@ public class Solution implements Comparable<Solution> {
 		doesntKnowLab.add(new Pair<Lab, TA>(lab, taker));
 		
 		for (int j = 1; j < 4; j++) {
-			if (giver.getPrefer(j).equals(lab.getLecture().getCourse()) {
+			if ((giver.getPrefer(j) != null) && (giver.getPrefer(j).equals(lab.getLecture().getCourse()))) {
 				if (j == 1) {
 					addPref1(giver);
 					break;
@@ -230,15 +230,15 @@ public class Solution implements Comparable<Solution> {
 			}
 		}
 		for (int j = 1; j < 4; j++) {
-			if (taker.getPrefer(j).equals(lab.getLecture().getCourse()) {
+			if ((taker.getPrefer(j) != null) && (taker.getPrefer(j).equals(lab.getLecture().getCourse()))) {
 				if (j == 1) {
-					removePref1(taker);
+					noPref1.remove(taker);
 					break;
 				} else if (j == 2) {
-					removePref2(taker);
+					noPref2.remove(taker);
 					break;
 				} else if (j == 3) {
-					removePref3(taker);
+					noPref3.remove(taker);
 					break;
 				}
 			}
