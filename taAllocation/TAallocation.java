@@ -1266,7 +1266,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			return 0;
 		}
 		S.addManyCourses(labList, ta);
-		return (CourseList.size() - 1) * -35;
+		return (CourseList.size() - 2) * -35;
 	}
 	
 	public int checkSC6(TA ta,Solution S)
@@ -1298,7 +1298,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			return 0;
 		} else {
 			for (int i = 0; i < snrCourseList.size(); i++) {
-				for (int j = 0; j < snrCourseList.size(); j++) {
+				for (int j = i; j < snrCourseList.size(); j++) {
 						if (i != j) {
 							if (snrCourseList.get(i).equals(snrCourseList.get(j))) {
 								snrCourseList.remove(j);
