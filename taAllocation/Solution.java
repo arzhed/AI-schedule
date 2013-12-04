@@ -39,7 +39,9 @@ public class Solution implements Cloneable, Comparable<Solution> {
 	}
 	
 	public void addMTML(TA ta, int num) {
-		moreThanMinLabs.add(new Pair<TA, Integer>(ta, num));
+		Pair<TA, Integer> pair = new Pair<TA, Integer>(ta, num);
+		if (!moreThanMinLabs.contains(pair))
+			moreThanMinLabs.add(pair);
 	}
 	
 	public Vector<Pair<TA, Integer>> getMTML() {
@@ -93,7 +95,8 @@ public class Solution implements Cloneable, Comparable<Solution> {
 	
 	// adds a pair to doesntKnowLab
 	public void addDoesntKnow(Pair<Lab, TA> pair) {
-		doesntKnowLab.add(pair);
+		if (doesntKnowLab.contains(pair))
+			doesntKnowLab.add(pair);
 	}
 	
 	public Vector<Pair<Lab, TA>> getDoesntKnow() {
@@ -117,7 +120,6 @@ public class Solution implements Cloneable, Comparable<Solution> {
 		numGive--;
 		if (numGive > 0)
 			moreThanMinLabs.add(i, new Pair<TA, Integer>(giver, numGive));
-			
 		doesntKnowLab.remove(new Pair<Lab, TA>(lab, giver));
 		for (Course c : taker.getKnows()) {
 			if (c.equals(lab.getLecture().getCourse())) {

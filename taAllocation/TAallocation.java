@@ -819,6 +819,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	        	tempSet = new Vector<Solution>();
 	        	long startMutate = System.currentTimeMillis();
 	        	for (Solution s : S) {
+					System.out.println("Meh");
 	        		tempSet.add(s);
 	        		tempSet.add(TAa.mutate(s));
 	        		TAa.checkSoftConstraints(s);
@@ -1170,6 +1171,9 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	public int checkSC0(TA ta,Solution S)
 	{
 		// Each TA should be funded (that is, they should teach at least one course)
+		int labcount = labCount(ta.getName(), S);
+		if (labcount > minlabs) 
+			S.addMTML(ta, (int)(labcount - minlabs));
 		if (labCount(ta.getName(), S) == 0) {
 			S.addNolabs(ta);
 			return -50;
