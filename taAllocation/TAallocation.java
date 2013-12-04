@@ -819,7 +819,6 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	        	tempSet = new Vector<Solution>();
 	        	long startMutate = System.currentTimeMillis();
 	        	for (Solution s : S) {
-	        		System.out.println("Meh");
 	        		tempSet.add(s);
 	        		tempSet.add(TAa.mutate(s));
 	        		TAa.checkSoftConstraints(s);
