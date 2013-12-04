@@ -45,6 +45,12 @@ public class Pair<K, V> implements Map.Entry<K,V>, Comparable {
 	public K getKey() {
 		return key;
 	}
+	
+	public K setKey(K key) {
+		K old = this.key;
+		this.key = key;
+		return old;
+	}
 
 	/**
 	 * Returns the value part of the pair.

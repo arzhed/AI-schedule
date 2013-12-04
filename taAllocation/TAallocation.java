@@ -1601,27 +1601,30 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			labList = s.getManyCourses().get(random).getKey();
 			
 			// count how many labs of each course the ta has
-			Vector<Pair<Course, Vector<Lab>>> courses = new Vector<Pair<Course, Vector<Lab>>>();
+			Vector<Pair<Integer, Pair<Course, Vector<Lab>>>> courses = new Vector<Pair<Integer, Pair<Course, Vector<Lab>>>>();
 			START: for (Lab lab : labList) {
-				for (Pair<Course, Vector<Lab>> coursePair : courses) {
-					if (coursePair.getKey() == lab.getLecture().getCourse()) {
-						coursePair.getValue().add(lab);
+				for (Pair<Integer, Pair<Course, Vector<Lab>>> coursePair : courses) {
+					if (coursePair.getValue().getKey().equals(lab.getLecture().getCourse())) {
+						coursePair.getValue().getValue().add(lab);
+						coursePair.setKey(new Integer(coursePair.getKey() + 1));
 						break START;
 					}
 				}
 				Vector<Lab> vec = new Vector<Lab>();
 				vec.add(lab);
-				courses.add(new Pair<Course, Vector<Lab>>(lab.getLecture().getCourse(), vec));
+				courses.add(new Pair<Integer, Pair<Course, Vector<Lab>>>(new Integer(1), new Pair <Course, Vector<Lab>>(lab.getLecture().getCourse(), vec)));
 				
 			}
 			
 			// find course with least # of labs
-			Pair<Course, Vector<Lab>> lowest = courses.get(0);
+			Collections.sort(courses);
+			Pair<Course, Vector<Lab>> lowest = courses.get(0).getValue();
+			/*Pair<Course, Vector<Lab>> lowest = courses.get(0).getValue();
 			for (Pair<Course, Vector<Lab>> coursePair : courses) {
 				if (coursePair.getValue().size() < lowest.getValue().size()) {
 					lowest = coursePair;
 				}
-			}
+			}*/
 			
 			int i = 0;
 			// pick a random lab ta pair, then try to give away lab from course
