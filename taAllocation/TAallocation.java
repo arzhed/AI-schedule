@@ -1383,32 +1383,43 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	// randomly select one of several mutation functions, apply to the given solution and return a new solution
 	public Solution mutate(Solution s) {
 		Solution newSol;
-		int random = (int) (Math.random() * 4);
-		
-		switch (random) {
-		case 0:
-			newSol = makeGiveToNoLabs(s);
-			break;
-		case 1:
-			newSol = makeRemoveUnknownCourse(s);
-			break;
-		case 2:
-			newSol = makeGetPreferenceCourse(s);
-			break;
-		case 3:
-			newSol = makeLessThan2Courses(s);
-			break;
-		default:
-			newSol = makeRandomChange(s);
-			break;
+		int random;
+		while (true) {
+			random = (int) (Math.random() * 4);
+			
+			switch (random) {
+			case 0:
+				if (s.checkNoLabs().isEmpty())
+					continue;
+				newSol = makeGiveToNoLabs(s);
+				break;
+			case 1:
+				if (!s.getDoesntKnow().isEmpty())
+					continue;
+				newSol = makeRemoveUnknownCourse(s);
+				break;
+			case 2:
+				if (s.getPref3().isEmpty())
+					continue;
+				newSol = makeGetPreferenceCourse(s);
+				break;
+			case 3:
+				if (s.getManyCourses().isEmpty())
+					continue;
+				newSol = makeLessThan2Courses(s);
+				break;
+			default:
+				newSol = makeRandomChange(s);
+				break;
+			}
+			
+			// if newSol is empty (a mutation function returned an error or couldn't find a suitable solution) randomly make a change
+			if (newSol.getSolution().isEmpty()) {
+				newSol = makeRandomChange(s);
+			}
+			
+			return newSol;
 		}
-		
-		// if newSol is empty (a mutation function returned an error or couldn't find a suitable solution) randomly make a change
-		if (newSol.getSolution().isEmpty()) {
-			newSol = makeRandomChange(s);
-		}
-		
-		return newSol;
 		
 		// if there is a ta with no labs, give them a lab from another ta
 		/*if (!s.checkNoLabs().isEmpty()) {
