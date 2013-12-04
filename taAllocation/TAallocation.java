@@ -1456,6 +1456,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			System.out.println("Meh");
 			Vector<TA> noLabs = clone.checkNoLabs();
 			randomTA = (int) (Math.random() * clone.checkNoLabs().size());
 			TA ta = noLabs.get(randomTA);

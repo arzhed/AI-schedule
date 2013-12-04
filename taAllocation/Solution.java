@@ -112,14 +112,15 @@ public class Solution implements Cloneable, Comparable<Solution> {
 		for (Pair<TA, Integer> pair : moreThanMinLabs) {
 			if (pair.getKey().equals(giver)) {
 				numGive = pair.getValue();
+				numGive--;
+				moreThanMinLabs.remove(i);
+				if (numGive > 0)
+					moreThanMinLabs.add(i, new Pair<TA, Integer>(giver, numGive));
 				break;
 			}
 			i++;
 		}
-		moreThanMinLabs.remove(i);
-		numGive--;
-		if (numGive > 0)
-			moreThanMinLabs.add(i, new Pair<TA, Integer>(giver, numGive));
+
 		doesntKnowLab.remove(new Pair<Lab, TA>(lab, giver));
 		for (Course c : taker.getKnows()) {
 			if (c.equals(lab.getLecture().getCourse())) {
