@@ -1481,14 +1481,14 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 					clone.giveLab(giver, ta, lab);
 					numLabsGiven++;
 				}
-				System.out.println(c);
+				//System.out.println(c);
 				c++;
 			} while ((numLabsGiven < minlabs) && (c < 20));
 			if ((numLabsGiven == minlabs) && checkHardConstraints(clone)) {
-				System.out.println(numLabsGiven == minlabs);
+				System.out.println("Mutate 1 worked!!!");
 				return clone;
 			}
-			System.out.println("i = " + i);
+			//System.out.println("i = " + i);
 		}
 		return new Solution();
 	}
