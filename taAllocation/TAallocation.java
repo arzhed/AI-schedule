@@ -1182,6 +1182,9 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		int labcount = labCount(ta.getName(), S);
 		if (labcount > minlabs) 
 			S.addMTML(ta, (int)(labcount - minlabs));
+			S.addALML(ta, (int)(labcount - minlabs));
+		if (labcount == minlabs)
+			S.addALML(ta, (int)(labcount - minlabs));
 		if (labCount(ta.getName(), S) == 0) {
 			S.addNolabs(ta);
 			return -50;
@@ -1404,9 +1407,10 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			
 			switch (random) {
 			case 0:
-				if (s.checkNoLabs().isEmpty())
-					continue;
-				newSol = makeGiveToNoLabs(s);
+				if (s.checkNoLabs().isEmpty()) 
+					newSol = makeGiveToFewerLabs(s);
+				else
+					newSol = makeGiveToNoLabs(s);
 				break;
 			case 1:
 				if (s.getDoesntKnow().isEmpty())
@@ -1652,10 +1656,30 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	private Solution makeGiveToFewerLabs(Solution s) {
 		Solution clone;
 		int random;
+		TA giver;
+		TA taker;
+		Vector<Lab> list;
 		
 		for (int i = 0; i < 5; i++) {
 			// sort to find highest
-			//Collections.sort(s.get(), Collections.reverseOrder());
+			Collections.sort(s.getALML(), Collections.reverseOrder());
+			int highestLabs = s.getALML().get(0).getKey();
+			giver = s.getALML().get(0).getValue();
+			int j = 0;
+			do {
+				j++;
+				random = (int) (Math.random() * s.getALML().size());
+				taker = s.getALML().get(random).getValue();
+				if (taker.equals(giver))
+					continue;
+				
+				clone = new Solution(s);
+				list = labListPerTA(giver.getName(), s);
+				random = (int) (Math.random() * list.size());
+				clone.giveLab(giver, taker, list.get(random));
+				if (checkHardConstraints(clone))
+					return clone;
+			} while (j < s.getALML().size());
 		}
 		return new Solution();
 	}

@@ -98,13 +98,19 @@ public class Solution implements Comparable<Solution> {
 		return moreThanMinLabs;
 	}
 	
-	/*
-	public void addALML(TA ta, int num) {
-		Pair<TA, Integer> pair = new Pair<TA, Integer>(ta, num);
-		if (!atLeastMinLabs.contains(pair))
-	*/
 	
-	//public Vector<Pair<Integer, TA>>
+	public void addALML(TA ta, int num) {
+		for (Pair<Integer, TA> pair : atLeastMinLabs) {
+			if (pair.getKey().equals(ta)) {
+				return;
+			}
+		}
+		atLeastMinLabs.add(new Pair<Integer, TA>(num, ta));
+	}
+	
+	public Vector<Pair<Integer, TA>> getALML() {
+		return atLeastMinLabs;
+	}
 	public void addNolabs(TA ta) {
 		if (!noLabs.contains(ta))
 			noLabs.add(ta);
