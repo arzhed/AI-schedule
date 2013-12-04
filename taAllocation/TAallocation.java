@@ -826,7 +826,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	        	System.out.println("Mutation took " + (System.currentTimeMillis() - startMutate) + " milliseconds.");
 	        	
 	        	// check if time to stop and output final solution
-	        	if ((System.currentTimeMillis() - startTime) <= runtime - STOP_TIME)
+	        	if ((System.currentTimeMillis() - startTime) > runtime - STOP_TIME)
 	        		break;
 	        	
 	        	// sort the solutions, with lowest penalty at index 0
