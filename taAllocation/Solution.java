@@ -1,6 +1,7 @@
 package taAllocation;
 
 import java.util.Vector;
+import java.util.Iterator;
 
 public class Solution implements Comparable<Solution> {
 	
@@ -25,7 +26,6 @@ public class Solution implements Comparable<Solution> {
 	public int[] SCV = new int[11];
 	public int[] SCVP = new int[] {-50, -5, -10, -10, -20, -35, -30, -10, -25, -5, -10};
 	public int total = 0;
-	
 	
 	public Solution (Solution s) {
 		for (Pair<Lab, TA> pair : s.getSolution()) {
@@ -59,7 +59,6 @@ public class Solution implements Comparable<Solution> {
 	public Solution () {
 	
 	}
-	
 	
 	public void addElement (Pair<Lab, TA> elem) {
 		solution.add(elem);
@@ -140,7 +139,17 @@ public class Solution implements Comparable<Solution> {
 	
 	// give ta with no labs a lab, preferably from ta with a high # of labs
 	public void giveLab(TA giver, TA taker, Lab lab) {
-		solution.remove(new Pair<Lab, TA>(lab, giver));
+		Pair<Lab, TA> oldPair = new Pair<Lab, TA>(lab, giver);
+		int j = 0;
+		for (Pair<Lab, TA> pair : solution) {
+			if (oldPair.equals(pair)) {
+				Pair <Lab, TA> k = solution.remove(j);
+				if (k == null)
+					System.out.println("givelab not working");
+				return;
+			}
+			j++;
+		}
 		solution.add(new Pair<Lab, TA>(lab, taker));
 		int i = 0;
 		int numGive = 0;
@@ -168,14 +177,34 @@ public class Solution implements Comparable<Solution> {
 	public void swapLabs(TA ta1, TA ta2, Lab lab1, Lab lab2) {
 		Pair<Lab, TA> pair1 = new Pair<Lab, TA>(lab1, ta1);
 		Pair<Lab, TA> pair2 = new Pair<Lab, TA>(lab2, ta2);
-		solution.remove(pair1);
-		solution.remove(pair2);
+		int numPairsRemoved = 0;
+		int i = 0;
+		for (Iterator<Pair<Lab, TA>> it = solution.iterator(); it.hasNext();) {
+			Pair<Lab, TA> pair = it.next();
+			if (pair1.equals(pair)) {
+				it.remove();
+				numPairsRemoved++;
+			}
+			else if (pair2.equals(pair)) {
+				it.remove();
+				numPairsRemoved++;
+			}
+			
+			if (numPairsRemoved >= 2)
+				break;
+			
+			i++;
+		}
 		pair1.setValue(ta2);
 		pair2.setValue(ta1);
 		solution.add(pair1);
 		solution.add(pair2);
 	}
-
+	
+	// clones the instance of this class that calls this method
+	protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 
 	@Override
 	public int compareTo(Solution o) {
