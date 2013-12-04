@@ -11,8 +11,8 @@ public class Solution implements Comparable<Solution> {
 	private Vector<TA> noLabs = new Vector<TA>();
 	
 	// holds TAs with more than MIN_LABS
-	private Vector<Pair<TA, Integer>> moreThanMinLabs = new Vector<Pair<TA, Integer>>();
-	private Vector<Pair<TA, Integer>> atLeastMinLabs = new Vector<Pair<TA, Integer>>();
+	private Vector<Pair<Integer, TA>> moreThanMinLabs = new Vector<Pair<Integer, TA>>();
+	private Vector<Pair<Integer, TA>> atLeastMinLabs = new Vector<Pair<Integer, TA>>();
 	
 	// holds TAs who don't have their first, second, or third preferred courses
 	private Vector<TA> noPref1 = new Vector<TA>();
@@ -35,8 +35,8 @@ public class Solution implements Comparable<Solution> {
 		for (TA ta : s.getNoLabs()) {
 			noLabs.add(ta);
 		}
-		for (Pair<TA, Integer> pair : s.getMTML()) {
-			moreThanMinLabs.add(new Pair<TA, Integer>(pair.getKey(), pair.getValue()));
+		for (Pair<Integer, TA> pair : s.getMTML()) {
+			moreThanMinLabs.add(new Pair<Integer, TA>(pair.getKey(), pair.getValue()));
 		}
 		for (TA ta : s.getPref1()) {
 			noPref1.add(ta);
@@ -74,15 +74,15 @@ public class Solution implements Comparable<Solution> {
 	}
 	
 	public void addMTML(TA ta, int num) {
-		for (Pair<TA, Integer> pair : moreThanMinLabs) {
+		for (Pair<Integer, TA> pair : moreThanMinLabs) {
 			if (pair.getKey().equals(ta)) {
 				return;
 			}
 		}
-		moreThanMinLabs.add(new Pair<TA, Integer>(ta, num));
+		moreThanMinLabs.add(new Pair<Integer, TA>(num, ta));
 	}
 	
-	public Vector<Pair<TA, Integer>> getMTML() {
+	public Vector<Pair<Integer, TA>> getMTML() {
 		return moreThanMinLabs;
 	}
 	
@@ -91,6 +91,8 @@ public class Solution implements Comparable<Solution> {
 		Pair<TA, Integer> pair = new Pair<TA, Integer>(ta, num);
 		if (!atLeastMinLabs.contains(pair))
 	*/
+	
+	//public Vector<Pair<Integer, TA>>
 	public void addNolabs(TA ta) {
 		if (!noLabs.contains(ta))
 			noLabs.add(ta);
@@ -165,13 +167,13 @@ public class Solution implements Comparable<Solution> {
 		solution.add(new Pair<Lab, TA>(lab, taker));
 		int i = 0;
 		int numGive = 0;
-		for (Pair<TA, Integer> pair : moreThanMinLabs) {
+		for (Pair<Integer, TA> pair : moreThanMinLabs) {
 			if (pair.getKey().equals(giver)) {
-				numGive = pair.getValue();
+				numGive = pair.getKey();
 				numGive--;
 				moreThanMinLabs.remove(i);
 				if (numGive > 0)
-					moreThanMinLabs.add(i, new Pair<TA, Integer>(giver, numGive));
+					moreThanMinLabs.add(i, new Pair<Integer, TA>(numGive, giver));
 				break;
 			}
 			i++;

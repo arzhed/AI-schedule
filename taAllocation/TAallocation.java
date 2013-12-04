@@ -1474,7 +1474,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			int c = 0;
 			do {
 				randomGiver = (int) (Math.random() * clone.getMTML().size());
-				TA giver = clone.getMTML().get(randomGiver).getKey();
+				TA giver = clone.getMTML().get(randomGiver).getValue();
 				if (labCount(giver.getName(), s) == 0)
 					continue;
 				randomLab = (int) (Math.random() * labListPerTA(giver.getName(), s).size());
@@ -1649,9 +1649,16 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	}
 	
 	
-	//private Solution makeGiveToFewerLabs(Solution s) {
+	private Solution makeGiveToFewerLabs(Solution s) {
+		Solution clone;
+		int random;
 		
-	
+		for (int i = 0; i < 5; i++) {
+			// sort to find highest
+			//Collections.sort(s.get(), Collections.reverseOrder());
+		}
+		return new Solution();
+	}
 	
 	private Solution makeRandomChange(Solution s) {
 		Solution clone;
