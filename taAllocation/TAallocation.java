@@ -1538,7 +1538,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				random = (int) (Math.random() * s.getPref3().size());
 				ta = s.getPref3().get(random);
 				c++;
-			} while (labCount(pair.getValue().getName(), s) <= minlabs);
+			} while (labCount(ta.getName(), s) <= minlabs);
 			int i = 0;
 			// get random lab ta pair, take lab if preferred
 			do {
