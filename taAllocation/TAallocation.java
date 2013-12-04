@@ -1109,7 +1109,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			for (Lab l2 : labListTA ) {
 				//no TA is assigned simultaneous labs
 				if ( (!l2.equals(l) || ! l2.getLecture().equals(l.getLecture()) || ! l2.getLecture().getCourse().equals(l.getLecture().getCourse())) && e_conflicts(l.getTime().getName(), l2.getTime().getName())) {
-                    System.out.println("one or more TA is assigned simultaneous labs)");
+                    System.out.println("One or more TA is assigned simultaneous labs");
                     return false;
                 }
 			}
@@ -1124,7 +1124,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			for (Lab l : labListTA ) {
 				//no TA is assigned a lab that conflicts with his/her own courses
                 if (e_conflicts(l.getTime().getName(), L.getTime().getName())) {
-					System.out.println("one or more TA is assigned a lab that conflicts with his/her own courses");
+					System.out.println("One or more TA is assigned a lab that conflicts with his/her own courses");
                     return false;
 				}
 			}
@@ -1456,7 +1456,6 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.println("Meh");
 			Vector<TA> noLabs = clone.checkNoLabs();
 			randomTA = (int) (Math.random() * clone.checkNoLabs().size());
 			TA ta = noLabs.get(randomTA);
@@ -1475,16 +1474,22 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				System.out.println("MTML size1: " + s.getMTML().size());
 				clone2.giveLab(giver, ta, lab);
+				System.out.println("MTML size2: " + s.getMTML().size());
 				if (checkHC5(clone2, ta) && (checkHC6(clone2, ta))) {
 					clone.giveLab(giver, ta, lab);
 					numLabsGiven++;
 				}
+				System.out.println(c);
 				c++;
 			} while ((numLabsGiven < minlabs) && (c < 20));
+			
 			if ((numLabsGiven == minlabs) && checkHardConstraints(clone)) {
+				System.out.println(numLabsGiven == minlabs);
 				return clone;
 			}
+			System.out.println("i = " + i);
 		}
 		return new Solution();
 	}

@@ -2,7 +2,7 @@ package taAllocation;
 
 import java.util.Vector;
 
-public class Solution implements Cloneable, Comparable<Solution> {
+public class Solution implements Comparable<Solution> {
 	
 	private Vector<Pair<Lab, TA>> solution = new Vector<Pair<Lab, TA>>();
 	
@@ -25,6 +25,37 @@ public class Solution implements Cloneable, Comparable<Solution> {
 	public int[] SCV = new int[11];
 	public int[] SCVP = new int[] {-50, -5, -10, -10, -20, -35, -30, -10, -25, -5, -10};
 	public int total = 0;
+	
+	
+	public Solution (Solution s) {
+		for (Pair<Lab, TA> pair : s.getSolution()) {
+			solution.add(new Pair<Lab, TA>(pair.getKey(), pair.getValue()));
+		}
+		for (TA ta : s.getNoLabs()) {
+			noLabs.add(ta);
+		}
+		for (Pair<TA, Integer> pair : s.getMTML()) {
+			moreThanMinLabs.add(new Pair<TA, Integer>(pair.getKey(), pair.getValue()));
+		}
+		for (TA ta : s.getPref1()) {
+			noPref1.add(ta);
+		}
+		for (TA ta : s.getPref2()) {
+			noPref2.add(ta);
+		}
+		for (TA ta : s.getPref3()) {
+			noPref3.add(ta);
+		}
+		for (Pair<Vector<Lab>, TA> pair : s.getManyCourses())
+		{
+			Vector<Lab> labs = new Vector<Lab>();
+			for (Lab lab : pair.getKey()) {
+				labs.add(lab);
+			}
+			moreThan2Courses.add(new Pair<Vector<Lab>, TA>(labs, pair.getValue()));
+		}
+	}
+	
 	
 	public void addElement (Pair<Lab, TA> elem) {
 		solution.add(elem);
@@ -140,11 +171,7 @@ public class Solution implements Cloneable, Comparable<Solution> {
 		solution.add(pair1);
 		solution.add(pair2);
 	}
-	
-	// clones the instance of this class that calls this method
-	protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
+
 
 	@Override
 	public int compareTo(Solution o) {
