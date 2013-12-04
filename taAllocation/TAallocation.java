@@ -819,7 +819,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	        	tempSet = new Vector<Solution>();
 	        	long startMutate = System.currentTimeMillis();
 	        	for (Solution s : S) {
-					System.out.println("Meh");
+	        		System.out.println("Meh");
 	        		tempSet.add(s);
 	        		tempSet.add(TAa.mutate(s));
 	        		TAa.checkSoftConstraints(s);
@@ -1381,209 +1381,291 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return penalty;
 	}
 	
+	// randomly select one of several mutation functions, apply to the given solution and return a new solution
 	public Solution mutate(Solution s) {
-		Solution clone = new Solution();
+		Solution newSol;
+		int random = (int) (Math.random() * 4);
+		
+		switch (random) {
+		case 0:
+			newSol = makeGiveToNoLabs(s);
+			break;
+		case 1:
+			newSol = makeRemoveUnknownCourse(s);
+			break;
+		case 2:
+			newSol = makeGetPreferenceCourse(s);
+			break;
+		case 3:
+			newSol = makeLessThan2Courses(s);
+			break;
+		default:
+			newSol = makeRandomChange(s);
+			break;
+		}
+		
+		// if newSol is empty (a mutation function returned an error or couldn't find a suitable solution) randomly make a change
+		if (newSol.getSolution().isEmpty()) {
+			newSol = makeRandomChange(s);
+		}
+		
+		return newSol;
+		
 		// if there is a ta with no labs, give them a lab from another ta
-		if (!s.checkNoLabs().isEmpty()) {
-			// sort taList by the number of labs each ta has
-			int randomTA;
-			int randomGiver;
-			int numLabsGiven;
-			for (int i = 0; i < 5; i++) {
-				numLabsGiven = 0;
+		/*if (!s.checkNoLabs().isEmpty()) {
+			
+		}
+		
+		// if ta doesn't know a lab they teach, give it to someone that does know
+		if (!s.getDoesntKnow().isEmpty()) {
+			
+		}
+		// try giving a ta their first, second, or third preference course if they don't have it
+		if (!s.getPref3().isEmpty()) {
+			
+		}
+		// try to give away or swap out a lab whose course is different from the other labs
+		if (!s.getManyCourses().isEmpty()) {
+			
+		}
+		return new Solution();*/
+	}
+	
+	// if there is a ta with no labs, give them a lab from another ta
+	private Solution makeGiveToNoLabs(Solution s) {
+		// sort taList by the number of labs each ta has
+		Solution clone = new Solution();
+		int randomTA;
+		int randomGiver;
+		int numLabsGiven;
+		for (int i = 0; i < 5; i++) {
+			numLabsGiven = 0;
+			try {
+				clone = (Solution) s.clone();
+			} catch (CloneNotSupportedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Vector<TA> noLabs = clone.checkNoLabs();
+			randomTA = (int) (Math.random() * clone.checkNoLabs().size());
+			TA ta = noLabs.get(randomTA);
+			int randomLab;
+			Lab lab;
+			int c = 0;
+			do {
+				randomGiver = (int) (Math.random() * clone.getMTML().size());
+				TA giver = clone.getMTML().get(randomGiver).getKey();
+				randomLab = (int) (Math.random() * labListPerTA(giver.getName(), s).size());
+				lab = labListPerTA(giver.getName(), s).get(randomLab);
+				Solution clone2 = new Solution();
 				try {
-					clone = (Solution) s.clone();
+					clone2 = (Solution) clone.clone();
 				} catch (CloneNotSupportedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				Vector<TA> noLabs = clone.checkNoLabs();
-				randomTA = (int) (Math.random() * clone.checkNoLabs().size());
-				TA ta = noLabs.get(randomTA);
-				int randomLab;
-				Lab lab;
-				int c = 0;
-				do {
-					randomGiver = (int) (Math.random() * clone.getMTML().size());
-					TA giver = clone.getMTML().get(randomGiver).getKey();
-					randomLab = (int) (Math.random() * labListPerTA(giver.getName(), s).size());
-					lab = labListPerTA(giver.getName(), s).get(randomLab);
-					Solution clone2 = new Solution();
-					try {
-						clone2 = (Solution) clone.clone();
-					} catch (CloneNotSupportedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					clone2.giveLab(giver, ta, lab);
-					if (checkHC5(clone2, ta) && (checkHC6(clone2, ta))) {
-						clone.giveLab(giver, ta, lab);
-						numLabsGiven++;
-					}
-					c++;
-				} while ((numLabsGiven < minlabs) && (c < 20));
-				if ((numLabsGiven == minlabs) && checkHardConstraints(clone)) {
-					return clone;
+				clone2.giveLab(giver, ta, lab);
+				if (checkHC5(clone2, ta) && (checkHC6(clone2, ta))) {
+					clone.giveLab(giver, ta, lab);
+					numLabsGiven++;
 				}
-			}
-		}
-		
-		
-		
-		// if ta doesn't know a lab they teach, give it to someone that does know
-		if (!s.getDoesntKnow().isEmpty()) {
-			int i = 0;
-			int randomPair;
-			int randomTaker;
-			Pair<Lab, TA> pair;
-			TA taker;
-			clone = new Solution();
-			
-			// choose a random Lab TA pair 
-			for (int j = 0; j < 5; j++) {
-				int c = 0;
-				do {
-					if (c >= 25)
-						return new Solution();
-					randomPair = (int) (Math.random() * s.getDoesntKnow().size());
-					pair = s.getDoesntKnow().get(randomPair);
-					c++;
-				} while (labCount(pair.getValue().getName(), s) <= minlabs);
-				do {
-					i++;
-					randomTaker = (int) (Math.random() * taList.size());
-					taker = taList.get(randomTaker);
-					// if the taker has less than maxlabs and knows the material try giving it to him
-					if (labCount(taker.getName(), s) < maxlabs && taker.getKnows().contains(pair.getKey().getLecture().getCourse())) {
-						try {
-							clone = (Solution) s.clone();
-						} catch (CloneNotSupportedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-							return new Solution();
-						}
-						clone.giveLab(pair.getValue(), taker, pair.getKey());
-						if (checkHardConstraints(clone)) {
-							return clone;
-						}
-					}
-				} while (i < taList.size());
-			}
-		}
-		// try giving a ta their first, second, or third preference course if they don't have it
-		if (!s.getPref3().isEmpty()) {
-			int max;
-			int random;
-			TA ta;
-			Pair <Lab, TA> pair = new Pair<Lab, TA>(null, null);
-			Course course;
-			clone = new Solution();
-			for (int j = 0; j < 5; j++) {
-				// pick a random ta with no preference course, with more than minlabs
-				int c = 0;
-				do {
-					if (c >= 25)
-						return new Solution();
-					random = (int) (Math.random() * s.getPref3().size());
-					ta = s.getPref3().get(random);
-					c++;
-				} while (labCount(pair.getValue().getName(), s) <= minlabs);
-				int i = 0;
-				// get random lab ta pair, take lab if preferred
-				do {
-					i++;
-					random = (int) (Math.random() * s.getSolution().size());
-					pair = s.getSolution().elementAt(random);
-					course = pair.getKey().getLecture().getCourse();
-					if (course == ta.getPrefer(1) || course == ta.getPrefer(2) || course == ta.getPrefer(3)) {
-						// make a clone of the current solution
-						try {
-							clone = (Solution) s.clone();
-						} catch (CloneNotSupportedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-							return new Solution();
-						}
-						// if the ta has a lab it can give without hitting minlabs, give it
-						if (labCount(s.getSolution().elementAt(random).getValue().getName(), s) > minlabs &&
-								labCount(ta.getName(), s) < maxlabs) {
-							clone.giveLab(pair.getValue(), ta, pair.getKey());
-							if (checkHardConstraints(clone)) {
-								return clone;
-							}
-						}
-					}
-				} while (i < s.getSolution().size());
-			}
-		}
-		// try to give away or swap out a lab whose course is different from the other labs
-		if (!s.getManyCourses().isEmpty()) {
-			int max;
-			int random;
-			TA ta;
-			TA taker;
-			Course course;
-			Pair <Lab, TA> pair = new Pair<Lab, TA>(null, null);
-			Vector<Lab> labList;
-			clone = new Solution();
-			for (int j = 0; j < 5; j++) {
-				// pick a random ta with more than 2 courses and more than minlabs
-				int c = 0;
-				do {
-					if (c >= 25)
-						return new Solution();
-					random = (int) (Math.random() * s.getManyCourses().size());
-					ta = s.getManyCourses().get(random).getValue();
-					c++;
-				} while (labCount(pair.getValue().getName(), s) <= minlabs);
-				labList = s.getManyCourses().get(random).getKey();
-				
-				// count how many labs of each course the ta has
-				Vector<Pair<Course, Vector<Lab>>> courses = new Vector<Pair<Course, Vector<Lab>>>();
-				START: for (Lab lab : labList) {
-					for (Pair<Course, Vector<Lab>> coursePair : courses) {
-						if (coursePair.getKey() == lab.getLecture().getCourse()) {
-							coursePair.getValue().add(lab);
-							break START;
-						}
-					}
-					Vector<Lab> vec = new Vector<Lab>();
-					vec.add(lab);
-					courses.add(new Pair<Course, Vector<Lab>>(lab.getLecture().getCourse(), vec));
-					
-				}
-				
-				// find course with least # of labs
-				Pair<Course, Vector<Lab>> lowest = courses.get(0);
-				for (Pair<Course, Vector<Lab>> coursePair : courses) {
-					if (coursePair.getValue().size() < lowest.getValue().size()) {
-						lowest = coursePair;
-					}
-				}
-				
-				int i = 0;
-				// pick a random lab ta pair, then try to give away lab from course
-				do {
-					random = (int) (Math.random() * taList.size());
-					taker = taList.get(random);
-					
-					if (labCount(taker.getName(), s) < maxlabs) {
-						try {
-							clone = (Solution) s.clone();
-						} catch (CloneNotSupportedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-							return new Solution();
-						}
-						random = (int) (Math.random() * lowest.getValue().size());
-						clone.giveLab(ta, taker, lowest.getValue().get(random));
-						if (checkHardConstraints(clone)) {
-							return clone;
-						}
-					}
-				} while (i < taList.size());
+				c++;
+			} while ((numLabsGiven < minlabs) && (c < 20));
+			if ((numLabsGiven == minlabs) && checkHardConstraints(clone)) {
+				return clone;
 			}
 		}
 		return new Solution();
+	}
+	
+	// if ta doesn't know a lab they teach, give it to someone that does know
+	private Solution makeRemoveUnknownCourse(Solution s) {
+		Solution clone = new Solution();
+		int i = 0;
+		int randomPair;
+		int randomTaker;
+		Pair<Lab, TA> pair;
+		TA taker;
+		clone = new Solution();
+		
+		// choose a random Lab TA pair 
+		for (int j = 0; j < 5; j++) {
+			int c = 0;
+			do {
+				if (c >= 25)
+					return new Solution();
+				randomPair = (int) (Math.random() * s.getDoesntKnow().size());
+				pair = s.getDoesntKnow().get(randomPair);
+				c++;
+			} while (labCount(pair.getValue().getName(), s) <= minlabs);
+			do {
+				i++;
+				randomTaker = (int) (Math.random() * taList.size());
+				taker = taList.get(randomTaker);
+				// if the taker has less than maxlabs and knows the material try giving it to him
+				if (labCount(taker.getName(), s) < maxlabs && taker.getKnows().contains(pair.getKey().getLecture().getCourse())) {
+					try {
+						clone = (Solution) s.clone();
+					} catch (CloneNotSupportedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						return new Solution();
+					}
+					clone.giveLab(pair.getValue(), taker, pair.getKey());
+					if (checkHardConstraints(clone)) {
+						return clone;
+					}
+				}
+			} while (i < taList.size());
+		}
+		return new Solution();
+	}
+	
+	// try giving a ta their first, second, or third preference course if they don't have it
+	private Solution makeGetPreferenceCourse(Solution s) {
+		Solution clone = new Solution();
+		int max;
+		int random;
+		TA ta;
+		Pair <Lab, TA> pair = new Pair<Lab, TA>(null, null);
+		Course course;
+		clone = new Solution();
+		for (int j = 0; j < 5; j++) {
+			// pick a random ta with no preference course, with more than minlabs
+			int c = 0;
+			do {
+				if (c >= 25)
+					return new Solution();
+				random = (int) (Math.random() * s.getPref3().size());
+				ta = s.getPref3().get(random);
+				c++;
+			} while (labCount(pair.getValue().getName(), s) <= minlabs);
+			int i = 0;
+			// get random lab ta pair, take lab if preferred
+			do {
+				i++;
+				random = (int) (Math.random() * s.getSolution().size());
+				pair = s.getSolution().elementAt(random);
+				course = pair.getKey().getLecture().getCourse();
+				if (course == ta.getPrefer(1) || course == ta.getPrefer(2) || course == ta.getPrefer(3)) {
+					// make a clone of the current solution
+					try {
+						clone = (Solution) s.clone();
+					} catch (CloneNotSupportedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						return new Solution();
+					}
+					// if the ta has a lab it can give without hitting minlabs, give it
+					if (labCount(s.getSolution().elementAt(random).getValue().getName(), s) > minlabs &&
+							labCount(ta.getName(), s) < maxlabs) {
+						clone.giveLab(pair.getValue(), ta, pair.getKey());
+						if (checkHardConstraints(clone)) {
+							return clone;
+						}
+					}
+				}
+			} while (i < s.getSolution().size());
+		}
+		return new Solution();
+	}
+	
+	// try to give away or swap out a lab whose course is different from the other labs
+	private Solution makeLessThan2Courses(Solution s) {
+		Solution clone = new Solution();
+		int random;
+		TA ta;
+		TA taker;
+		Pair <Lab, TA> pair = new Pair<Lab, TA>(null, null);
+		Vector<Lab> labList;
+		clone = new Solution();
+		for (int j = 0; j < 5; j++) {
+			// pick a random ta with more than 2 courses and more than minlabs
+			int c = 0;
+			do {
+				if (c >= 25)
+					return new Solution();
+				random = (int) (Math.random() * s.getManyCourses().size());
+				ta = s.getManyCourses().get(random).getValue();
+				c++;
+			} while (labCount(pair.getValue().getName(), s) <= minlabs);
+			labList = s.getManyCourses().get(random).getKey();
+			
+			// count how many labs of each course the ta has
+			Vector<Pair<Course, Vector<Lab>>> courses = new Vector<Pair<Course, Vector<Lab>>>();
+			START: for (Lab lab : labList) {
+				for (Pair<Course, Vector<Lab>> coursePair : courses) {
+					if (coursePair.getKey() == lab.getLecture().getCourse()) {
+						coursePair.getValue().add(lab);
+						break START;
+					}
+				}
+				Vector<Lab> vec = new Vector<Lab>();
+				vec.add(lab);
+				courses.add(new Pair<Course, Vector<Lab>>(lab.getLecture().getCourse(), vec));
+				
+			}
+			
+			// find course with least # of labs
+			Pair<Course, Vector<Lab>> lowest = courses.get(0);
+			for (Pair<Course, Vector<Lab>> coursePair : courses) {
+				if (coursePair.getValue().size() < lowest.getValue().size()) {
+					lowest = coursePair;
+				}
+			}
+			
+			int i = 0;
+			// pick a random lab ta pair, then try to give away lab from course
+			do {
+				random = (int) (Math.random() * taList.size());
+				taker = taList.get(random);
+				
+				if (labCount(taker.getName(), s) < maxlabs) {
+					try {
+						clone = (Solution) s.clone();
+					} catch (CloneNotSupportedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						return new Solution();
+					}
+					random = (int) (Math.random() * lowest.getValue().size());
+					clone.giveLab(ta, taker, lowest.getValue().get(random));
+					if (checkHardConstraints(clone)) {
+						return clone;
+					}
+				}
+			} while (i < taList.size());
+		}
+		return new Solution();
+	}
+	
+	private Solution makeRandomChange(Solution s) {
+		Solution clone = new Solution();
+		int random;
+		Pair<Lab, TA> pair1;
+		Pair<Lab, TA> pair2;
+		
+		for (int i = 0; i < s.getSolution().size(); i++) {
+			// get 2 random pairs from solution
+			random = (int) (Math.random() * s.getSolution().size());
+			pair1 = s.getSolution().get(random);
+			random = (int) (Math.random() * s.getSolution().size());
+			pair2 = s.getSolution().get(random);
+			
+			try {
+				clone = (Solution) s.clone();
+			} catch (CloneNotSupportedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return s;
+			}
+			
+			// swap labs, then test against hard constraints
+			clone.swapLabs(pair1.getValue(), pair2.getValue(), pair1.getKey(), pair2.getKey());
+			if (checkHardConstraints(clone)) {
+				return clone;
+			}
+		}
+		return s;
 	}
 }
