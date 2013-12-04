@@ -818,10 +818,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	        	// mutate all solutions
 	        	tempSet = new Vector<Solution>();
 	        	long startMutate = System.currentTimeMillis();
+	        	Solution temp;
 	        	for (Solution s : S) {
 	        		tempSet.add(s);
-	        		tempSet.add(TAa.mutate(s));
-	        		TAa.checkSoftConstraints(s);
+	        		temp = TAa.mutate(s);
+	        		tempSet.add(temp);
+	        		TAa.checkSoftConstraints(temp);
 	        	}
 	        	System.out.println("Mutation took " + (System.currentTimeMillis() - startMutate) + " milliseconds.");
 	        	
@@ -835,6 +837,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	        	// set best solution
 	        	bestSolution = tempSet.get(0);
 	        	System.out.println("Best solution penalty = " + bestSolution.total);
+	        	System.out.println("Worst solution penalty = " + tempSet.get(tempSet.size() - 1).total);
 	        	
 	        	// check if best solution is significantly better, output it if so
 	        	if (tempSet.get(0).total - 10 > bestSolution.total) {
@@ -1618,7 +1621,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			int i = 0;
 			// pick a random lab ta pair, then try to give away lab from course
 			do {
-				System.out.println("Here 3, " + i);
+				//System.out.println("Here 3, " + i);
 				random = (int) (Math.random() * taList.size());
 				taker = taList.get(random);
 				
