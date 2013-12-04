@@ -2,7 +2,7 @@ package taAllocation;
 
 import java.util.Vector;
 
-public class Solution implements Cloneable {
+public class Solution implements Cloneable, Comparable<Solution> {
 	
 	private Vector<Pair<Lab, TA>> solution = new Vector<Pair<Lab, TA>>();
 	
@@ -24,6 +24,7 @@ public class Solution implements Cloneable {
 	
 	public int[] SCV = new int[11];
 	public int[] SCVP = new int[] {-50, -5, -10, -10, -20, -35, -30, -10, -25, -5, -10};
+	public int total = 0;
 	
 	public void addElement (Pair<Lab, TA> elem) {
 		solution.add(elem);
@@ -141,5 +142,10 @@ public class Solution implements Cloneable {
 	protected Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
+
+	@Override
+	public int compareTo(Solution o) {
+		return this.total - o.total;
+	}
 }
 		

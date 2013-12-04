@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.util.Collections;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -23,6 +24,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	 */
 	static final int	DEFAULT_MAX_TIME = 30000;
 	private static final int	NUM_SOLUTIONS = 20;
+	private static final int STOP_TIME = 250;
 	
 	private static Vector<TA> taList = new Vector<TA>();
 	private static Vector<Instructor> instructorList = new Vector<Instructor>();
@@ -808,15 +810,49 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				System.out.println("SC Score for " + i + ": " + TAa.checkSoftConstraints(S[i]));
 			}
 			
-	        
-	        // loop and mutate set until time runs out
-	        /*while ((System.currentTimeMillis() - startTime) < runtime) {
-	        	TAa.mutate(S[0]);
-	        	System.out.println("Mutation took " + (System.currentTimeMillis() - startTime) + " milliseconds.");
-	        }*/
-			
-			bestSolution = S[0];
 			String outfilename = makeOutfilename(args[0]);
+			
+			Vector<Solution> tempSet;
+	        // loop and mutate set until time runs out
+	        while ((System.currentTimeMillis() - startTime) < runtime) {
+	        	// mutate all solutions
+	        	tempSet = new Vector<Solution>();
+	        	long startMutate = System.currentTimeMillis();
+	        	for (Solution s : S) {
+	        		tempSet.add(s);
+	        		tempSet.add(TAa.mutate(s));
+	        		TAa.checkSoftConstraints(s);
+	        	}
+	        	System.out.println("Mutation took " + (System.currentTimeMillis() - startMutate) + " milliseconds.");
+	        	
+	        	// check if time to stop and output final solution
+	        	if ((System.currentTimeMillis() - startTime) <= runtime - STOP_TIME)
+	        		break;
+	        	
+	        	// sort the solutions, with lowest penalty at index 0
+	        	Collections.sort(tempSet, Collections.reverseOrder());
+	        	
+	        	// check if best solution is significantly better, output it if so
+	        	if (tempSet.get(0).total - 10 > bestSolution.total) {
+	        		outputSolution(outfilename);
+	        	}
+	        	
+	        	// set best solution
+	        	bestSolution = tempSet.get(0);
+	        	
+	        	// select 75% of set from best solutions, and 25% randomly from the remainder
+	        	int numBest = (int)Math.ceil(NUM_SOLUTIONS * 0.75);
+	        	int numRandom = (int)Math.floor(NUM_SOLUTIONS * 0.25);
+	        	for (int i = 0; i < numBest; i++) {
+	        		S[i] = tempSet.get(0);
+	        		tempSet.remove(S[i]);
+	        	}
+	        	for (int j = numBest; j < numRandom; j++) {
+	        		int random = (int) (Math.random() * tempSet.size());
+	        		S[j] = tempSet.get(random);
+	        		tempSet.remove(S[j]);
+	        	}
+	        }
 			outputSolution(outfilename);
 		}
 	    else { // go into "command mode" if there's nothing on the command line
@@ -1337,6 +1373,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		for (int i : S.SCV) {
 			penalty += i;
 		}
+		S.total = penalty;
 		return penalty;
 	}
 	
@@ -1360,13 +1397,13 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				randomTA = (int) (Math.random() * clone.checkNoLabs().size());
 				TA ta = noLabs.get(randomTA);
 				int randomLab;
-				Lab Lab;
+				Lab lab;
 				int c = 0;
 				do {
 					randomGiver = (int) (Math.random() * clone.getMTML().size());
-					TA giver = clone.getMTML().get(randomGiver);
-					randomLab = (int) (Math.random() * labListPerTA(giver).size());
-					lab = labListPerTA(giver).get(randomLab);
+					TA giver = clone.getMTML().get(randomGiver).getKey();
+					randomLab = (int) (Math.random() * labListPerTA(giver.getName(), s).size());
+					lab = labListPerTA(giver.getName(), s).get(randomLab);
 					Solution clone2 = new Solution();
 					try {
 						clone2 = (Solution) clone.clone();
@@ -1386,9 +1423,9 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				}
 			}
 		}
-						
-					
-					
+		
+		
+		
 		// if ta doesn't know a lab they teach, give it to someone that does know
 		if (!s.getDoesntKnow().isEmpty()) {
 			int i = 0;
