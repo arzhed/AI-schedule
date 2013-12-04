@@ -82,9 +82,9 @@ public class Solution implements Comparable<Solution> {
 		return moreThanMinLabs;
 	}
 	
-	// adds a pair to doesntKnowLab
 	public void addNolabs(TA ta) {
-		noLabs.add(ta);
+		if (!noLabs.contains(ta))
+			noLabs.add(ta);
 	}
 		
 	public Vector<TA> getNoLabs() {
@@ -129,7 +129,7 @@ public class Solution implements Comparable<Solution> {
 	
 	// adds a pair to doesntKnowLab
 	public void addDoesntKnow(Pair<Lab, TA> pair) {
-		if (doesntKnowLab.contains(pair))
+		if (!doesntKnowLab.contains(pair))
 			doesntKnowLab.add(pair);
 	}
 	
