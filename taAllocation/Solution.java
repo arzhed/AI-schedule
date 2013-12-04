@@ -17,6 +17,8 @@ public class Solution implements Cloneable {
 	private Vector<TA> noPref2 = new Vector<TA>();
 	private Vector<TA> noPref3 = new Vector<TA>();
 	
+	private Vector<Pair<Vector<Lab>, TA>> moreThan2Courses = new Vector<Pair<Vector<Lab>, TA>>();
+	
 	// holds TA lab pairs where the TA doesn't know the material for the lab
 	private Vector<Pair<Lab, TA>> doesntKnowLab = new Vector<Pair<Lab, TA>>();
 	
@@ -77,6 +79,15 @@ public class Solution implements Cloneable {
 	
 	public Vector<TA> getPref3() {
 		return noPref3;
+	}
+	
+	public void addManyCourses(Vector<Lab> labList, TA ta) {
+		if (!moreThan2Courses.contains(ta))
+			moreThan2Courses.add(new Pair<Vector<Lab>, TA>(labList, ta));
+	}
+	
+	public Vector<Pair<Vector<Lab>, TA>> getManyCourses() {
+		return moreThan2Courses;
 	}
 	
 	// adds a pair to doesntKnowLab

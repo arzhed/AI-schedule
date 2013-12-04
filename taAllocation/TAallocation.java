@@ -1205,7 +1205,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			return 0;
 		} else {
 			for (int i = 0; i < CourseList.size(); i++) {
-				for (int j = 0; j < CourseList.size(); j++) {
+				for (int j = i; j < CourseList.size(); j++) {
 						if (i != j) {
 							if (CourseList.elementAt(i).equals(CourseList.elementAt(j))) {
 								CourseList.removeElementAt(j);
@@ -1217,6 +1217,7 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		if (CourseList.size() <= 2) {
 			return 0;
 		}
+		S.addManyCourses(labList, ta);
 		return (CourseList.size() - 1) * -10;
 	}
 	
@@ -1406,21 +1407,28 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			int max;
 			int random;
 			TA ta;
-			Pair <Lab, TA> pair;
+			Pair <Lab, TA> pair = new Pair<Lab, TA>(null, null);
 			Course course;
 			clone = new Solution();
-			for (int i = 0; i < 5; i++) {
-				// pick a random ta with no preference course
-				random = (int) (Math.random() * s.getPref3().size());
-				ta = s.getPref3().get(random);
-				
+			for (int j = 0; j < 5; j++) {
+				// pick a random ta with no preference course, with more than minlabs
+				int c = 0;
+				do {
+					if (c >= 25)
+						return new Solution();
+					random = (int) (Math.random() * s.getPref3().size());
+					ta = s.getPref3().get(random);
+					c++;
+				} while (labCount(pair.getValue().getName(), s) <= minlabs);
+				int i = 0;
 				// get random lab ta pair, take lab if preferred
 				do {
+					i++;
 					random = (int) (Math.random() * s.getSolution().size());
 					pair = s.getSolution().elementAt(random);
 					course = pair.getKey().getLecture().getCourse();
-					if ((course == ta.getPrefer(1) || course == ta.getPrefer(2) || course == ta.getPrefer(3))
-							&& labCount(s.getSolution().elementAt(random).getValue().getName(), s) > maxlabs) {
+					if (course == ta.getPrefer(1) || course == ta.getPrefer(2) || course == ta.getPrefer(3)) {
+						// make a clone of the current solution
 						try {
 							clone = (Solution) s.clone();
 						} catch (CloneNotSupportedException e) {
@@ -1428,12 +1436,84 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 							e.printStackTrace();
 							return new Solution();
 						}
-						clone.giveLab(pair.getValue(), ta, pair.getKey());
+						// if the ta has a lab it can give without hitting minlabs, give it
+						if (labCount(s.getSolution().elementAt(random).getValue().getName(), s) > minlabs &&
+								labCount(ta.getName(), s) < maxlabs) {
+							clone.giveLab(pair.getValue(), ta, pair.getKey());
+							if (checkHardConstraints(clone)) {
+								return clone;
+							}
+						}
+					}
+				} while (i < s.getSolution().size());
+			}
+		}
+		// try to give away or swap out a lab whose course is different from the other labs
+		if (!s.getManyCourses().isEmpty()) {
+			int max;
+			int random;
+			TA ta;
+			TA taker;
+			Course course;
+			Pair <Lab, TA> pair = new Pair<Lab, TA>(null, null);
+			Vector<Lab> labList;
+			clone = new Solution();
+			for (int j = 0; j < 5; j++) {
+				// pick a random ta with more than 2 courses and more than minlabs
+				int c = 0;
+				do {
+					if (c >= 25)
+						return new Solution();
+					random = (int) (Math.random() * s.getManyCourses().size());
+					ta = s.getManyCourses().get(random).getValue();
+					c++;
+				} while (labCount(pair.getValue().getName(), s) <= minlabs);
+				labList = s.getManyCourses().get(random).getKey();
+				
+				// count how many labs of each course the ta has
+				Vector<Pair<Course, Vector<Lab>>> courses = new Vector<Pair<Course, Vector<Lab>>>();
+				START: for (Lab lab : labList) {
+					for (Pair<Course, Vector<Lab>> coursePair : courses) {
+						if (coursePair.getKey() == lab.getLecture().getCourse()) {
+							coursePair.getValue().add(lab);
+							break START;
+						}
+					}
+					Vector<Lab> vec = new Vector<Lab>();
+					vec.add(lab);
+					courses.add(new Pair<Course, Vector<Lab>>(lab.getLecture().getCourse(), vec));
+					
+				}
+				
+				// find course with least # of labs
+				Pair<Course, Vector<Lab>> lowest = courses.get(0);
+				for (Pair<Course, Vector<Lab>> coursePair : courses) {
+					if (coursePair.getValue().size() < lowest.getValue().size()) {
+						lowest = coursePair;
+					}
+				}
+				
+				int i = 0;
+				// pick a random lab ta pair, then try to give away lab from course
+				do {
+					random = (int) (Math.random() * taList.size());
+					taker = taList.get(random);
+					
+					if (labCount(taker.getName(), s) < maxlabs) {
+						try {
+							clone = (Solution) s.clone();
+						} catch (CloneNotSupportedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							return new Solution();
+						}
+						random = (int) (Math.random() * lowest.getValue().size());
+						clone.giveLab(ta, taker, lowest.getValue().get(random));
 						if (checkHardConstraints(clone)) {
 							return clone;
 						}
 					}
-				} while (i < s.getSolution().size());
+				} while (i < taList.size());
 			}
 		}
 		return new Solution();
