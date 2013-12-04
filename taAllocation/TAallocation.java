@@ -1359,9 +1359,36 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 				Vector<TA> noLabs = clone.checkNoLabs();
 				randomTA = (int) (Math.random() * clone.checkNoLabs().size());
 				TA ta = noLabs.get(randomTA);
-			// loop, 
+				int randomLab;
+				Lab Lab;
+				int c = 0;
+				do {
+					randomGiver = (int) (Math.random() * clone.getMTML().size());
+					TA giver = clone.getMTML().get(randomGiver);
+					randomLab = (int) (Math.random() * labListPerTA(giver).size());
+					lab = labListPerTA(giver).get(randomLab);
+					Solution clone2 = new Solution();
+					try {
+						clone2 = (Solution) clone.clone();
+					} catch (CloneNotSupportedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					clone2.giveLab(giver, ta, lab);
+					if (checkHC5(clone2, ta) && (checkHC6(clone2, ta))) {
+						clone.giveLab(giver, ta, lab);
+						numLabsGiven++;
+					}
+					c++;
+				} while ((numLabsGiven < minlabs) && (c < 20));
+				if ((numLabsGiven == minlabs) && checkHardConstraints(clone)) {
+					return clone;
+				}
 			}
 		}
+						
+					
+					
 		// if ta doesn't know a lab they teach, give it to someone that does know
 		if (!s.getDoesntKnow().isEmpty()) {
 			int i = 0;
