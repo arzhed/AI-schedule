@@ -63,8 +63,8 @@ public class Solution implements Comparable<Solution> {
 	
 	public void wipe() {
 		noLabs = new Vector<TA>();
-		moreThanMinLabs = new Vector<Pair<TA, Integer>>();
-		atLeastMinLabs = new Vector<Pair<TA, Integer>>();
+		moreThanMinLabs = new Vector<Pair<Integer, TA>>();
+		atLeastMinLabs = new Vector<Pair<Integer, TA>>();
 		noPref1 = new Vector<TA>();
 		noPref2 = new Vector<TA>();
 		noPref3 = new Vector<TA>();
