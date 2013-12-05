@@ -803,8 +803,13 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			for (int i = 0; i < NUM_SOLUTIONS; i++) {
 				S[i] = new Solution();
 				do {
-					while (S[i].getSolution().isEmpty())
+					while (S[i].getSolution().isEmpty()) {
+						if ((System.currentTimeMillis() - startTime) >= runtime) {
+							System.out.println("Unsolveable");
+							return;
+						}
 						S[i] = randomGeneration();
+					}
 				} while (!TAa.checkHardConstraints(S[i]));
 				//System.out.println("HC OK for " + i);
 				TAa.checkSoftConstraints(S[i]);
