@@ -15,6 +15,12 @@ import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+/**
+ * The main class for the program, searches for a solution to a TA allocation
+ * problem using a set-based search.
+ * @author Kristopher Maxwell, Charles Cote, Arthur Simon, Florent Duffez
+ *
+ */
 public class TAallocation extends PredicateReader implements TAallocationPredicates
 {	
 	static PrintStream traceFile;
@@ -772,6 +778,14 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
         return false;
     }
 	
+    /**
+     * Main function for the program. If there are no command line arguments,
+     * starts a command line. Otherwise, opens the file given in the first argument,
+     * set the time the program should run to the second argument, then create
+     * the first generation of solutions, and mutate it until time runs out.
+     * Outputs the solution, or command line history, to a .out file at the end.
+     * @param args An array of command line arguments.
+     */
 	public static void main(String[] args) {
 		startTime = System.currentTimeMillis();
 		try {
@@ -1401,7 +1415,13 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return penalty;
 	}
 	
-	// randomly select one of several mutation functions, apply to the given solution and return a new solution
+	/**
+	 * Picks a random mutation function, repicks if that mutation function is
+	 * unnecessary for the start solution. If any mutation fails, make a random
+	 * change to the solution.
+	 * @param s the starting solution.
+	 * @return the mutated solution.
+	 */
 	public Solution mutate(Solution s) {
 		Solution newSol;
 		int random;
@@ -1444,27 +1464,14 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 			
 			return newSol;
 		}
-		
-		// if there is a ta with no labs, give them a lab from another ta
-		/*if (!s.checkNoLabs().isEmpty()) {
-			
-		}
-		
-		// if ta doesn't know a lab they teach, give it to someone that does know
-		if (!s.getDoesntKnow().isEmpty()) {
-			
-		}
-		// try giving a ta their first, second, or third preference course if they don't have it
-		if (!s.getPref3().isEmpty()) {
-			
-		}
-		// try to give away or swap out a lab whose course is different from the other labs
-		if (!s.getManyCourses().isEmpty()) {
-			
-		}
-		return new Solution();*/
 	}
 	
+	/**
+	 * Pick a TA that has no labs, then give them labs from TAs that can give them
+	 * until the TA has minlabs.
+	 * @param s the starting solution.
+	 * @return the mutated solution.
+	 */
 	// if there is a ta with no labs, give them a lab from another ta
 	private Solution makeGiveToNoLabs(Solution s) {
 		// sort taList by the number of labs each ta has
@@ -1506,7 +1513,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return new Solution();
 	}
 	
-	// if ta doesn't know a lab they teach, give it to someone that does know
+	/**
+	 * Pick a TA who has a lab whose course they don't know the material for, and
+	 * give one of those labs to a random TA.
+	 * @param s the starting solution.
+	 * @return the mutated solution.
+	 */
 	private Solution makeRemoveUnknownCourse(Solution s) {
 		Solution clone;
 		int i = 0;
@@ -1545,6 +1557,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return new Solution();
 	}
 	
+	/**
+	 * Pick a random TA that doesn't have one of their preference courses, then try
+	 * to give them a lab that fits one of their preferences from another TA.
+	 * @param s the starting solution.
+	 * @return the mutated solution.
+	 */
 	// try giving a ta their first, second, or third preference course if they don't have it
 	private Solution makeGetPreferenceCourse(Solution s) {
 		Solution clone;
@@ -1589,7 +1607,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return new Solution();
 	}
 	
-	// try to give away or swap out a lab whose course is different from the other labs
+	/**
+	 * Pick a random TA with their labs in more than 2 courses, then try to give a
+	 * lab from their course with the least number of labs to another TA.
+	 * @param s the starting solution.
+	 * @return the mutated solution.
+	 */
 	private Solution makeLessThan2Courses(Solution s) {
 		Solution clone;
 		int random;
@@ -1657,7 +1680,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return new Solution();
 	}
 	
-	
+	/**
+	 * Picks the TA with the highest number of labs, then gives a random lab of theirs
+	 * to a random TA with greater than or equal to minlabs.
+	 * @param s the starting solution.
+	 * @return the mutated solution.
+	 */
 	private Solution makeGiveToFewerLabs(Solution s) {
 		Solution clone;
 		int random;
@@ -1689,6 +1717,11 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return new Solution();
 	}
 	
+	/**
+	 * Switches two TA's between two randomly selected Lab TA pair.
+	 * @param s the starting solution.
+	 * @return the mutated solution.
+	 */
 	private Solution makeRandomChange(Solution s) {
 		Solution clone;
 		int random;

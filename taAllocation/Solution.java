@@ -3,6 +3,11 @@ package taAllocation;
 import java.util.Vector;
 import java.util.Iterator;
 
+/**
+ * Creates a Solution object, implements Comparable so it can be sorted in a list.
+ * @author Kristopher Maxwell, Charles Cote, Arthur Simon, Florent Duffez
+ *
+ */
 public class Solution implements Comparable<Solution> {
 	
 	private Vector<Pair<Lab, TA>> solution = new Vector<Pair<Lab, TA>>();

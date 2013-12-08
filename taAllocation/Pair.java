@@ -46,6 +46,11 @@ public class Pair<K, V> implements Map.Entry<K,V>, Comparable {
 		return key;
 	}
 	
+	/**
+	 * Sets the key to <code>key</code> and returns the old key.
+	 * @param key the new key.
+	 * @return the old key.
+	 */
 	public K setKey(K key) {
 		K old = this.key;
 		this.key = key;
@@ -108,6 +113,12 @@ public class Pair<K, V> implements Map.Entry<K,V>, Comparable {
 			return x.toString().compareTo(y.toString());
    }
 
+    /**
+     * Checks if the key and value of this pair are equal to the given pair.
+     * Assumes that both key and value have an equals function.
+     * @param pair the pair to compare with this pair
+     * @return returns true if key and value in both pairs are equal to each other, false otherwise
+     */
     public boolean equals(Pair pair) {
         return  this.getKey().equals(pair.getKey()) && this.getValue().equals(pair.getValue());
 
