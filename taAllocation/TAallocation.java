@@ -735,6 +735,10 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return false;
 	}
 
+    /**
+     * Generates s0 by assigning a random TA to every Lab. If a newly assigned TA breaks a hard constraint, the program randomly search for another one. Careful : there is no guaranty the hard constraint are fully checked (the MIN_LAB constraint cannot be checked before it is over)
+     * @return Solution sol
+     */
     public static Solution randomGeneration() {
         Solution sol = new Solution();
         TAallocation taa = new TAallocation();
@@ -761,6 +765,14 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
         return sol;
     }
 
+    /**
+     * Returns true if <code>Lab lab</code>'s timeslot conflicts with another lab's timeslot already assigned to <code>TA ta</code> in given <code>Solution solution</code>
+     * @param ta - a TA already assigned to x labs
+     * @param lab - a lab we want to assign to ta
+     * @param solution - the current solution we are checking
+     * @return boolean
+     */
+
     public boolean simultaneousLabs(TA ta, Lab lab, Solution solution) {
         Vector<Lab> listAssignedLabToTA = TAallocation.labListPerTA(ta.getName(),solution);
         for (Lab labAs : listAssignedLabToTA){
@@ -770,6 +782,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
         return false;
     }
 
+    /**
+     * Returns true if <code>Lab lab</code>'s timeslot conflicts with a lecture's timeslot that <code>TA ta</code> is taking.
+     * @param ta
+     * @param lab
+     * @return boolean
+     */
     private boolean conflictsCourses(TA ta, Lab lab) {
         for(Lecture lec : ta.getTaking()) {
             if(e_conflicts(lec.getTime().getName(), lab.getTime().getName()))

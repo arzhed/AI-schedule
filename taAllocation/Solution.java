@@ -11,28 +11,35 @@ import java.util.Iterator;
 public class Solution implements Comparable<Solution> {
 	
 	private Vector<Pair<Lab, TA>> solution = new Vector<Pair<Lab, TA>>();
-	
-	// holds TAs with no labs
-	private Vector<TA> noLabs = new Vector<TA>();
-	
-	// holds TAs with more than MIN_LABS
+
+    /**holds TAs with no labs  */
+    private Vector<TA> noLabs = new Vector<TA>();
+
+    /**holds TAs with more than MIN_LABS     */
 	private Vector<Pair<Integer, TA>> moreThanMinLabs = new Vector<Pair<Integer, TA>>();
+    /** holds TAs with at least MIN_LABS     */
 	private Vector<Pair<Integer, TA>> atLeastMinLabs = new Vector<Pair<Integer, TA>>();
-	
-	// holds TAs who don't have their first, second, or third preferred courses
+
+    /**holds TAs who don't have their first preferred courses     */
 	private Vector<TA> noPref1 = new Vector<TA>();
+    /**     *  holds TAs who don't have their second preferred courses     */
 	private Vector<TA> noPref2 = new Vector<TA>();
+    /**  holds TAs who don't have their third preferred courses */
 	private Vector<TA> noPref3 = new Vector<TA>();
 	
 	private Vector<Pair<Vector<Lab>, TA>> moreThan2Courses = new Vector<Pair<Vector<Lab>, TA>>();
 	
-	// holds TA lab pairs where the TA doesn't know the material for the lab
+	/** holds TA lab pairs where the TA doesn't know the material for the lab*/
 	private Vector<Pair<Lab, TA>> doesntKnowLab = new Vector<Pair<Lab, TA>>();
 	
 	public int[] SCV = new int[11];
 	public int[] SCVP = new int[] {-50, -5, -10, -10, -20, -35, -30, -10, -25, -5, -10};
 	public int total = 0;
-	
+
+    /**
+     * Constructor that sets all the useful data structures
+     * @param  s
+     */
 	public Solution (Solution s) {
 		for (Pair<Lab, TA> pair : s.getSolution()) {
 			solution.add(new Pair<Lab, TA>(pair.getKey(), pair.getValue()));
@@ -65,7 +72,10 @@ public class Solution implements Comparable<Solution> {
 	public Solution () {
 	
 	}
-	
+
+    /**
+     * clean all data structures
+     */
 	public void wipe() {
 		noLabs = new Vector<TA>();
 		moreThanMinLabs = new Vector<Pair<Integer, TA>>();
@@ -76,34 +86,52 @@ public class Solution implements Comparable<Solution> {
 		moreThan2Courses = new Vector<Pair<Vector<Lab>, TA>>();
 		doesntKnowLab = new Vector<Pair<Lab, TA>>();
 	}
-		
-	
+
+    /**
+     * add element to solution
+     * @param elem
+     */
 	public void addElement (Pair<Lab, TA> elem) {
 		solution.add(elem);
 	}
-	
+
 	public Vector<Pair<Lab, TA>> getSolution() {
 		return solution;
 	}
-	
+
+    /**
+     * @return  the vector of TAs not assigned to any lab
+     */
 	public Vector<TA> checkNoLabs() {
 		return noLabs;
 	}
-	
+
+    /**
+     * Add <code>TA ta</code> to the vector moreThanMinLabs
+     * @param ta
+     * @param num - number of labs <code>TA ta</code> is assigned to
+     */
 	public void addMTML(TA ta, int num) {
 		for (Pair<Integer, TA> pair : moreThanMinLabs) {
 			if (pair.getKey().equals(ta)) {
-				return;
+				return;                       t
 			}
 		}
 		moreThanMinLabs.add(new Pair<Integer, TA>(num, ta));
 	}
-	
+
+    /**
+     * @return vector moreThanMinLabs
+     */
 	public Vector<Pair<Integer, TA>> getMTML() {
 		return moreThanMinLabs;
 	}
-	
-	
+
+    /**
+     * Add <code>TA ta</code> to vector atLeastMinLabs
+     * @param ta
+     * @param num - number of labs TA ta is assigned to
+     */
 	public void addALML(TA ta, int num) {
 		for (Pair<Integer, TA> pair : atLeastMinLabs) {
 			if (pair.getKey().equals(ta)) {
@@ -112,42 +140,74 @@ public class Solution implements Comparable<Solution> {
 		}
 		atLeastMinLabs.add(new Pair<Integer, TA>(num, ta));
 	}
-	
+
+    /**
+     * @return  vector atLeastMinLabs
+     */
 	public Vector<Pair<Integer, TA>> getALML() {
 		return atLeastMinLabs;
 	}
+
+    /**
+     * add TA ta that is not assigned to any lab to the corresponding data structure : the vector of TAs <code>noLabs</code>
+     * @param ta
+     */
 	public void addNolabs(TA ta) {
 		if (!noLabs.contains(ta))
 			noLabs.add(ta);
 	}
-		
+
+    /**
+     * @return the vector <code>noLabs</code> of TAs not assigned to any lab.
+     */
 	public Vector<TA> getNoLabs() {
 		return noLabs;
 	}
-	
+
+    /**
+     * Add TA ta to the vector noPref1 that holds TAs not assigned to their 1st preferred course
+     * @param ta
+     */
 	public void addPref1(TA ta) {
 		if (!noPref1.contains(ta))
 			noPref1.add(ta);
 	}
-	
+
+    /**
+     * @return the vector of TAs not assigned to their 1st prefered courses
+     */
 	public Vector<TA> getPref1() {
 		return noPref1;
 	}
-	
+
+    /**
+     * Add TA ta to the vector noPref2 that holds TAs not assigned to their 2nd preferred course
+     * @param ta
+     */
 	public void addPref2(TA ta) {
 		if (!noPref2.contains(ta))
 			noPref2.add(ta);
 	}
-	
+
+    /**
+     * @return the vector of TAs not assigned to their 2nd prefered courses
+     */
 	public Vector<TA> getPref2() {
 		return noPref2;
 	}
-	
+
+    /**
+     * Add TA ta to the vector noPref3 that holds TAs not assigned to their 3rd preferred course
+     * @param ta
+     */
 	public void addPref3(TA ta) {
 		if (!noPref3.contains(ta))
 			noPref3.add(ta);
 	}
-	
+
+    /**
+     * @return the vector of TAs not assigned to their 3rd prefered courses
+     */
 	public Vector<TA> getPref3() {
 		return noPref3;
 	}
@@ -164,19 +224,27 @@ public class Solution implements Comparable<Solution> {
 	public Vector<Pair<Vector<Lab>, TA>> getManyCourses() {
 		return moreThan2Courses;
 	}
-	
-	// adds a pair to doesntKnowLab
+
+    /**
+     *  adds a pair to doesntKnowLab
+     * @param pair
+     */
 	public void addDoesntKnow(Pair<Lab, TA> pair) {
 		if (!doesntKnowLab.contains(pair))
 			doesntKnowLab.add(pair);
 	}
-	
+
+    /**
+     * @return vector <code>doesntKnowLab</code>
+     */
 	public Vector<Pair<Lab, TA>> getDoesntKnow() {
 		return doesntKnowLab;
 	}
-	
-	
-	// give ta with no labs a lab, preferably from ta with a high # of labs
+
+
+    /**
+     *  give ta with no labs a lab, preferably from ta with a high # of labs
+      */
 	public void giveLab(TA giver, TA taker, Lab lab) {
 		
 		Pair<Lab, TA> oldPair = new Pair<Lab, TA>(lab, giver);
@@ -249,8 +317,14 @@ public class Solution implements Comparable<Solution> {
 			}
 		}
 	}
-	
-	
+
+    /**
+     *
+     * @param ta1
+     * @param ta2
+     * @param lab1
+     * @param lab2
+     */
 	public void swapLabs(TA ta1, TA ta2, Lab lab1, Lab lab2) {
 		Pair<Lab, TA> pair1 = new Pair<Lab, TA>(lab1, ta1);
 		Pair<Lab, TA> pair2 = new Pair<Lab, TA>(lab2, ta2);
