@@ -1121,6 +1121,11 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 	
 	static long max(long a, long b) {return a>b?a:b;}
 	
+	/**
+	 * @param lab is the considered lab
+	 * @param S is the considered solution
+	 * @return the number of TA assigned to </code> Lab lab <code> in the </code> Solution S <code>
+	 */
 	public int taCountPerLab(Lab lab,Solution S)
 	{
 		int taCOUNT = 0;
@@ -1133,6 +1138,11 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return taCOUNT;
 	}
 	
+	/**
+	 * @param TA is the name of the considered ta
+	 * @param S is the considered solution
+	 * @return the vector of lab assigned to the TA TA in the Solution S
+	 */
 	public static Vector<Lab> labListPerTA(String TA,Solution S)
 	{
 		Vector<Lab> labList = new Vector<Lab>();
@@ -1143,12 +1153,22 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return labList;
 	}
 	
+	/**
+	 * @param TA is the name of the considered ta
+	 * @param S is the considered solution
+	 * @return the number of lab assigned to the TA TA in the Solution S
+	 */
 	public static int labCount(String TA,Solution S)
 	{
 		return labListPerTA(TA, S).size();
 	}
 	
-	
+	/**
+	 * Check the hard constraint 5 : no TA is assigned simultaneous labs
+	 * @param ta is the considered TA
+	 * @param S is the considered solution
+	 * @return true if the hard constraint 5 is not violated, false otherwise
+	 */
 	public boolean checkHC5(Solution S, TA ta) {
 		Vector<Lab> labListTA = labListPerTA(ta.getName(), S);
 		for (Lab l : labListTA ) {
@@ -1163,7 +1183,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return true;
 	}
 	
-	
+	/**
+	 * Check the hard constraint 6 : no TA is assigned a lab that conflicts with his/her own courses
+	 * @param ta is the considered TA
+	 * @param S is the considered solution
+	 * @return true if the hard constraint 6 is not violated, false otherwise
+	 */
 	public boolean checkHC6(Solution S, TA ta) {
 		Vector<Lab> labListTA = labListPerTA(ta.getName(), S);
 		for (Lecture L : ta.getTaking()) {
@@ -1178,7 +1203,17 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return true;
 	}
 	
-	
+	/**
+	 * Check all the hard constraint : 
+	 * 	- every TA is assigned at most MAX_LABS labs
+	 * 	- every TA is assigned at least MIN_LABS labs (if the TA *has* a lab assignment)
+	 * 	- no lab has more than one TA assigned to it
+	 *  - every lab has a TA assigned to it
+	 * 	- no TA is assigned a lab that conflicts with his/her own courses
+	 * 	- no TA is assigned simultaneous labs
+	 * @param S is the considered solution
+	 * @return true if all the hard constraints are not violated, false otherwise
+	 */
 	public boolean checkHardConstraints(Solution S){
 		
 		int labCOUNT;
@@ -1212,7 +1247,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		
 		return true;
 	}
-	
+	/**
+	 * Check the soft constraint 0 : Each TA should be funded (that is, they should teach at least one course)
+	 * @param ta is the considered TA
+	 * @param S is the considered solution
+	 * @return 0 if the soft constraint 0 is not violated, -50 otherwise
+	 */
 	public int checkSC0(TA ta,Solution S)
 	{
 		// Each TA should be funded (that is, they should teach at least one course)
@@ -1229,6 +1269,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return 0;
 	}
 	
+	/**
+	 * Check the soft constraint 1 : TAs should get their first choice course
+	 * @param ta is the considered TA
+	 * @param S is the considered solution
+	 * @return 0 if the soft constraint 1 is not violated, -5 otherwise
+	 */
 	public int checkSC1(TA ta,Solution S)
 	{
 		// TAs should get their first choice course
@@ -1240,6 +1286,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return -5;
 	}
 	
+	/**
+	 * Check the soft constraint 2 : TAs should get their first or second choice course 
+	 * @param ta is the considered TA
+	 * @param S is the considered solution
+	 * @return 0 if the soft constraint 2 is not violated, -10 otherwise
+	 */
 	public int checkSC2(TA ta,Solution S)
 	{
 		// TAs should get their first or second choice course 
@@ -1251,6 +1303,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return -10;
 	}
 	
+	/**
+	 * Check the soft constraint 3 : TAs should get their first or second or third choice course 
+	 * @param ta is the considered TA
+	 * @param S is the considered solution
+	 * @return 0 if the soft constraint 3 is not violated, -10 otherwise
+	 */
 	public int checkSC3(TA ta,Solution S)
 	{
 		// TAs should get their first or second or third choice course 
@@ -1267,6 +1325,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return -10;
 	}
 	
+	/**
+	 * Check the soft constraint 4 : TAs should have all their labs in the same course 
+	 * @param ta is the considered TA
+	 * @param S is the considered solution
+	 * @return 0 if the soft constraint 4 is not violated, -20 otherwise
+	 */
 	public int checkSC4(TA ta,Solution S)
 	{
 		// TAs should have all their labs in the same course 
@@ -1280,6 +1344,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return 0;
 	}
 	
+	/**
+	 * Check the soft constraint 5 : TAs should have all their labs in no more than 2 courses
+	 * @param ta is the considered TA
+	 * @param S is the considered solution
+	 * @return 0 if the soft constraint 5 is not violated, -35 multiplied by the number of times it is violated otherwise
+	 */
 	public int checkSC5(TA ta,Solution S)
 	{
 		// TAs should have all their labs in no more than 2 courses
@@ -1309,6 +1379,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return (CourseList.size() - 2) * -35;
 	}
 	
+	/**
+	 * Check the soft constraint 6 : TAs should not teach a lab for a course for which they don't know the subject matter
+	 * @param ta is the considered TA
+	 * @param S is the considered solution
+	 * @return 0 if the soft constraint 6 is not violated, -30 multiplied by the number of times it is violated otherwise
+	 */
 	public int checkSC6(TA ta,Solution S)
 	{
 		int total = 0;
@@ -1322,6 +1398,12 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return total;
 	}
 	
+	/**
+	 * Check the soft constraint 7 : TAs should not teach two labs of distinct courses at the senior level
+	 * @param ta is the considered TA
+	 * @param S is the considered solution
+	 * @return 0 if the soft constraint 7 is not violated, -10 multiplied by the number of times it is violated otherwise
+	 */
 	public int checkSC7(TA ta,Solution S)
 	{
 		// TAs should not teach two labs of distinct courses at the senior level
@@ -1354,6 +1436,13 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		
 	}
 	
+	/**
+	 * Check the soft constraint 8 : TAs should not teach more than one more lab than the TA that teaches the least number of labs. 
+	 * @param ta is the considered TA
+	 * @param S is the considered solution
+	 * @param leastNBLabs is least number of labs that that a TA has in the Solution S
+	 * @return 0 if the soft constraint 8 is not violated, -25 multiplied by the number of times it is violated otherwise
+	 */
 	public int checkSC8(TA ta,Solution S,int leastNBLabs)
 	{
 		int total = 0;
@@ -1363,6 +1452,13 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return total;
 	}
 	
+	/**
+	 * Check the soft constraint 9 : TAs should all teach the same number of labs. 
+	 * @param ta is the considered TA
+	 * @param S is the considered solution
+	 * @param NBLabs is least number of labs that that a TA has in the Solution S
+	 * @return 0 if the soft constraint 9 is not violated, -5 otherwise
+	 */
 	public int checkSC9(TA ta,Solution S,int NBLabs)
 	{
 		// TAs should all teach the same number of labs. 
@@ -1371,6 +1467,14 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return 0;
 	}
 	
+	/**
+	 * Check the soft constraint 10 : 
+	 * If the instructor requested particular TAs for his/her course,
+     * each of the lecture the instructor is teaching for that course should be taught by one of the requested TAs
+	 * @param ta is the considered TA
+	 * @param S is the considered solution
+	 * @return 0 if the soft constraint 10 is not violated, -10 multiplied by the number of times it is violated otherwise
+	 */
 	public int checkSC10(TA ta,Solution S)
 	{
 		// If the instructor requested particular TAs for his/her course,
@@ -1389,6 +1493,11 @@ public class TAallocation extends PredicateReader implements TAallocationPredica
 		return total;
 	}
 	
+	/**
+	 * Check all the soft constraints
+	 * @param S is the considered solution
+	 * @return the sum of all the penalties returned by all the soft constraints for all the TAs
+	 */
 	public int checkSoftConstraints(Solution S)
 	{
 		int penalty = 0;
