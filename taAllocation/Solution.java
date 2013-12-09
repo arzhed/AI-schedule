@@ -37,7 +37,7 @@ public class Solution implements Comparable<Solution> {
 	public int total = 0;
 
     /**
-     * Constructor that sets all the useful data structures
+     * Copy constructor for cloning in mutation method
      * @param  s
      */
 	public Solution (Solution s) {
@@ -69,6 +69,9 @@ public class Solution implements Comparable<Solution> {
 		}
 	}
 	
+	/**
+	  * required default constructor
+	 /*
 	public Solution () {
 	
 	}
@@ -95,6 +98,9 @@ public class Solution implements Comparable<Solution> {
 		solution.add(elem);
 	}
 
+	/**
+	  * @return solution assignments vector
+	  */
 	public Vector<Pair<Lab, TA>> getSolution() {
 		return solution;
 	}
@@ -121,7 +127,7 @@ public class Solution implements Comparable<Solution> {
 	}
 
     /**
-     * @return vector moreThanMinLabs
+     * @return list of TAs with more than min labs
      */
 	public Vector<Pair<Integer, TA>> getMTML() {
 		return moreThanMinLabs;
@@ -142,7 +148,7 @@ public class Solution implements Comparable<Solution> {
 	}
 
     /**
-     * @return  vector atLeastMinLabs
+     * @return  list of TAs with at least min labs
      */
 	public Vector<Pair<Integer, TA>> getALML() {
 		return atLeastMinLabs;
@@ -221,12 +227,15 @@ public class Solution implements Comparable<Solution> {
 		moreThan2Courses.add(new Pair<Vector<Lab>, TA>(labList, ta));
 	}
 	
+	/**
+	  * @return the vector of TAs assigned to labs of more than two different courses
+	  */
 	public Vector<Pair<Vector<Lab>, TA>> getManyCourses() {
 		return moreThan2Courses;
 	}
 
     /**
-     *  adds a pair to doesntKnowLab
+     * adds a pair to doesntKnowLab
      * @param pair
      */
 	public void addDoesntKnow(Pair<Lab, TA> pair) {
@@ -235,7 +244,7 @@ public class Solution implements Comparable<Solution> {
 	}
 
     /**
-     * @return vector <code>doesntKnowLab</code>
+     * @return vector of TAs assigned to labs they don't know the material to
      */
 	public Vector<Pair<Lab, TA>> getDoesntKnow() {
 		return doesntKnowLab;
@@ -243,8 +252,9 @@ public class Solution implements Comparable<Solution> {
 
 
     /**
-     *  give ta with no labs a lab, preferably from ta with a high # of labs
-      */
+     *  gives a lab from a ta to another; updates all vectors in solution
+	 *	@param TA, TA, Lab
+     */
 	public void giveLab(TA giver, TA taker, Lab lab) {
 		
 		Pair<Lab, TA> oldPair = new Pair<Lab, TA>(lab, giver);
@@ -319,7 +329,7 @@ public class Solution implements Comparable<Solution> {
 	}
 
     /**
-     *
+     * trade labs between two tas
      * @param ta1
      * @param ta2
      * @param lab1
